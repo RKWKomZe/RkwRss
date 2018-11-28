@@ -1,5 +1,7 @@
 <?php
-namespace RKW\RkwResourcespace\Domain\Repository;
+
+namespace RKW\RkwRss\ViewHelpers;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -14,14 +16,28 @@ namespace RKW\RkwResourcespace\Domain\Repository;
  */
 
 /**
- * Class FileRepository
+ * Class DateFormatRssViewHelper
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
- * @package RKW_Resourcespace
+ * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class DateFormatRssViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
+
+
+    /**
+     * Format timestamps to "D, d M Y H:i:s T"
+     *
+     * @param integer $dateTime
+     * @return string
+     */
+    public function render($dateTime)
+    {
+
+        return date("D, d M Y H:i:s O", $dateTime);
+        //===
+    }
 
 }

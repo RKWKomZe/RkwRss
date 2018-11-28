@@ -1,6 +1,7 @@
 <?php
 
-namespace RKW\RkwResourcespace\Domain\Repository;
+namespace RKW\RkwRss\Domain\Model;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -15,14 +16,37 @@ namespace RKW\RkwResourcespace\Domain\Repository;
  */
 
 /**
- * Class BackendUserRepository
+ * Class PagesLanguageOverlay
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
- * @package RKW_Resourcespace
+ * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class BackendUserRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class PagesLanguageOverlay extends Pages
 {
 
+
+    /**
+     * sysLanguageUid
+     *
+     * @var int
+     */
+    protected $sysLanguageUid;
+
+
+    /**
+     * Returns the sorting
+     *
+     * @return int $sorting
+     */
+    public function getSysLanguageUid()
+    {
+        return $this->sysLanguageUid;
+        //===
+    }
+
+
 }
+
+?>

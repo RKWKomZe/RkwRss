@@ -1,5 +1,7 @@
 <?php
-namespace RKW\RkwResourcespace\Domain\Model;
+
+namespace RKW\RkwRss\ViewHelpers;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -12,27 +14,30 @@ namespace RKW\RkwResourcespace\Domain\Model;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
 /**
- * Class BackendUser
+ * Class DateFormatInstantArticlesViewHelper
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
- * @package RKW_Resourcespace
+ * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class BackendUser extends \TYPO3\CMS\Extbase\Domain\Model\BackendUser
+class DateFormatInstantArticlesViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
-	/**
-	 * @var string
-	 */
-	protected $lang = '';
 
-	/**
-	 * Gets the lang of the user
-	 *
-	 * @return string
-	 */
-	public function getLang() {
-		return $this->lang;
-	}
+
+    /**
+     * Format timestamps to "D, d M Y H:i:s T"
+     *
+     * @param integer $dateTime
+     * @return string
+     */
+    public function render($dateTime)
+    {
+
+        return date("D, d M Y H:i:s O", $dateTime);
+        //===
+    }
+
 }

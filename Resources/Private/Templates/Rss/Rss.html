@@ -1,0 +1,39 @@
+{namespace rkwRss=RKW\RkwRss\ViewHelpers}
+
+<f:layout name="Rss" />
+
+This Template is responsible for displaying a single view for a domain object
+
+If you modify this template, do not forget to change the overwrite settings
+in /Configuration/ExtensionBuilder/settings.yaml:
+Resources:
+Private:
+Templates:
+Show.html: keep
+
+Otherwise your changes will be overwritten the next time you save the extension in the extension builder
+
+<f:section name="main">
+
+	<channel>
+
+		<!--
+			###############################################################
+			Get channel header
+			###############################################################
+		-->
+		<f:render partial="Rss/Common/ChannelHeader" arguments="{_all}" />
+
+		<!--
+			###############################################################
+			Page items
+			###############################################################
+		-->
+		<f:if condition="{pages}">
+			<f:render partial="Rss/ItemRss" arguments="{_all}" />
+		</f:if>
+
+	</channel>
+</f:section>
+
+

@@ -1,0 +1,55 @@
+{namespace rkwRss=RKW\RkwRss\ViewHelpers}
+
+<f:if condition="{pages}">
+	<f:for each="{pages}" as="page" iteration="iterator">
+		<!--
+			====================================================================
+			Item {iterator.cycle}
+			====================================================================
+		-->
+		<item>
+
+			<!--
+				++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				Get header stuff
+				++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			-->
+			<f:render partial="Rss/Common/ItemHeader" arguments="{_all}" />
+
+			<!--
+				++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				The full content of the article
+				++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			-->
+			<content:encoded>
+				<f:format.cdata>
+
+					<article>
+
+						<!-- Header -->
+						<f:if condition="{page.subtitle}">
+							<header>
+								<h2>{page.subtitle}</h2>
+							</header>
+						</f:if>
+
+
+						<!-- Content -->
+						{page.content}
+
+						<!-- Footer -->
+						<footer>
+							<small>
+								<f:format.html parseFuncTSPath="lib.parseFunc">
+									© <f:format.date date="{currentDate}" format="Y" /> {settings.copyrightHint}
+								</f:format.html>
+							</small>
+						</footer>
+					</article>
+
+				</f:format.cdata>
+			</content:encoded>
+		</item>
+	</f:for>
+</f:if>
+
