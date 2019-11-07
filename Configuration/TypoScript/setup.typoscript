@@ -214,8 +214,8 @@ plugin.tx_rkwrss._CSS_DEFAULT_STYLE (
 
 #=================================================================================
 
-TxRkwRssPage = PAGE
-TxRkwRssPage {
+txRkwRssPage = PAGE
+txRkwRssPage {
 
 	typeNum = {$plugin.tx_rkwrss.settings.rss.typeNum}
 	config {
@@ -262,8 +262,8 @@ TxRkwRssPage {
 }
 
 
-TxRkwRssInstantArticles < TxRkwRssPage
-TxRkwRssInstantArticles {
+txRkwRssInstantArticles < txRkwRssPage
+txRkwRssInstantArticles {
 
 	typeNum = {$plugin.tx_rkwrss.settings.instantArticles.typeNum}
 	10 {
