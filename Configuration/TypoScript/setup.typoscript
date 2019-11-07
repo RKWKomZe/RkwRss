@@ -1,0 +1,301 @@
+
+config.tx_extbase{
+	persistence{
+		classes {
+
+			RKW\RkwRss\Domain\Model\Pages {
+				mapping {
+					tableName = pages
+
+					# on pages tables it's the doktype
+					# if we set an value, we filter by it
+					# if do not set anything, all pages are found
+					recordType =
+
+					columns {
+						uid.mapOnProperty 		= uid
+						pid.mapOnProperty		= pid
+						sorting.mapOnProperty = sorting
+						title.mapOnProperty 	= title
+						subtitle.mapOnProperty 	= subtitle
+						tstamp.mapOnProperty 	= tstamp
+						crdate.mapOnProperty 	= crdate
+					}
+
+				}
+			}
+
+			# set model for mapping
+			RKW\RkwRss\Domain\Model\PagesLanguageOverlay {
+
+				mapping {
+
+					# set table name to map to
+					tableName = pages_language_overlay
+
+					# on pages tables it's the doktype
+					# if we set an value, we filter by it
+					# if do not set anything, all pages are found
+					recordType =
+
+					# mapping to properties of class
+					columns {
+						uid.mapOnProperty 		= uid
+						pid.mapOnProperty		= pid
+						title.mapOnProperty 	= title
+						subtitle.mapOnProperty 	= subtitle
+						tstamp.mapOnProperty 	= tstamp
+						crdate.mapOnProperty 	= crdate
+						sys_language_uid.mapOnProperty = sysLanguageUid
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+plugin.tx_rkwrss {
+	view {
+		templateRootPaths.0 = {$plugin.tx_rkwrss.view.templateRootPath}
+		partialRootPaths.0 = {$plugin.tx_rkwrss.view.partialRootPath}
+		layoutRootPaths.0 = {$plugin.tx_rkwrss.view.layoutRootPath}
+	}
+	persistence {
+		storagePid = {$plugin.tx_rkwrss.persistence.storagePid}
+	}
+	
+	settings {
+
+		rss {
+
+			# cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
+ 			pageUid= {$plugin.tx_rkwrss.settings.rss.pageUid}
+
+			# cat=plugin.tx_rkwrss; type=integer; label=TypeNum for RSS-Feed
+			typeNum = {$plugin.tx_rkwrss.settings.rss.typeNum}
+				
+			# max items in feed
+			limit = {$plugin.tx_rkwrss.settings.rss.limit}
+	
+			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
+			orderField = {$plugin.tx_rkwrss.settings.rss.orderField}
+	
+			# cat=plugin.tx_rkwrss; type=integer; label=ColPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
+			contentColPos = {$plugin.tx_rkwrss.settings.rss.contentColPos}
+	
+			# cat=plugin.tx_rkwrss; type=string; label=Name for RSS-Feed
+			feedName = {$plugin.tx_rkwrss.settings.rss.feedName}
+	
+			# cat=plugin.tx_rkwrss; type=string; label=Page Description
+			feedDescription = {$plugin.tx_rkwrss.settings.rss.feedDescription}
+	
+			# cat=plugin.tx_rkwrss; type=string; label=Relative Path to Icon of Feed
+			feedIcon = {$plugin.tx_rkwrss.settings.rss.feedIcon}
+	
+			# cat=plugin.tx_rkwrss; type=string; label=Copyright hint
+			copyrightHint = {$plugin.tx_rkwrss.settings.rss.copyrightHint}
+	
+			# cat=plugin.tx_rkwrss; type=string; label=Tracking Account Id
+			trackingAccountId = {$plugin.tx_rkwrss.settings.rss.trackingAccountId}
+		}
+
+
+		instantArticles {
+
+			# cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
+			pageUid= {$plugin.tx_rkwrss.settings.instantArticles.pageUid}
+
+			# cat=plugin.tx_rkwrss; type=integer; label=TypeNum for RSS-Feed
+			typeNum = {$plugin.tx_rkwrss.settings.instantArticles.typeNum}
+
+			# max items in feed
+			limit = {$plugin.tx_rkwrss.settings.instantArticles.limit}
+
+			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
+			orderField = {$plugin.tx_rkwrss.settings.instantArticles.orderField}
+
+			# cat=plugin.tx_rkwrss; type=integer; label=ColPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
+			contentColPos = {$plugin.tx_rkwrss.settings.instantArticles.contentColPos}
+
+			# cat=plugin.tx_rkwrss; type=string; label=Name for RSS-Feed
+			feedName = {$plugin.tx_rkwrss.settings.instantArticles.feedName}
+
+			# cat=plugin.tx_rkwrss; type=string; label=Page Description
+			feedDescription = {$plugin.tx_rkwrss.settings.instantArticles.feedDescription}
+
+			# cat=plugin.tx_rkwrss; type=string; label=Relative Path to Icon of Feed
+			feedIcon = {$plugin.tx_rkwrss.settings.instantArticles.feedIcon}
+
+			# cat=plugin.tx_rkwrss; type=string; label=Copyright hint
+			copyrightHint = {$plugin.tx_rkwrss.settings.instantArticles.copyrightHint}
+
+			# cat=plugin.tx_rkwrss; type=string; label=Tracking Account Id
+			trackingAccountId = {$plugin.tx_rkwrss.settings.instantArticles.trackingAccountId}
+			
+		}
+	}
+
+	// lib for content rendering
+	libs {
+
+
+		instantArticles < tt_content
+		instantArticles {
+
+			// no responsive images here!
+			image.20.1.layoutKey = default
+			textpic.20.1.layoutKey = default
+
+			// no wrapping divs here
+			stdWrap.innerWrap >
+
+			// remove all data-atttributes from RkwBasics-Extension with eTracker
+			stdWrap.HTMLparser {
+
+				keepNonMatchedTags = 1
+				removeTags = div
+				tags {
+
+					// Remove special attributes
+					a.fixAttrib.onclick.unset = 1
+					a.fixAttrib.data-tracker-type.unset = 1
+					a.fixAttrib.data-tracker-filename.unset = 1
+					a.fixAttrib.data-tracker-project.unset = 1
+
+					// Instant Articles only allows absolute values
+					iframe.fixAttrib {
+						width.set = 600
+						height.set = 450
+					}
+
+					// Instant Articles only supports h1 and h2
+					h3.remap = h2
+					h4.remap = h2
+					h5.remap = h2
+					h6.remap = h2
+				}
+			}
+		}
+
+		rss < .instantArticles
+		rss {
+
+			// remove unsupported tags
+			stdWrap.HTMLparser {
+				removeTags = div, iframe, script, figcaption
+			}
+
+		}
+	}
+}
+
+plugin.tx_rkwrss._CSS_DEFAULT_STYLE (
+	textarea.f3-form-error {
+		background-color:#FF9F9F;
+		border: 1px #FF0000 solid;
+	}
+
+	input.f3-form-error {
+		background-color:#FF9F9F;
+		border: 1px #FF0000 solid;
+	}
+
+	.typo3-messages .message-error {
+		color:red;
+	}
+
+	.typo3-messages .message-ok {
+		color:green;
+	}
+
+)
+
+#=================================================================================
+
+TxRkwRssPage = PAGE
+TxRkwRssPage {
+
+	typeNum = {$plugin.tx_rkwrss.settings.rss.typeNum}
+	config {
+
+		disableAllHeaderCode = 1
+		admPanel = 0
+		no_cache = 0
+		debug = 0
+
+		additionalHeaders.10.header = Content-Type:text/xml;charset=utf-8
+		metaCharset = utf-8
+
+		index_enable = 0
+		index_metatags = 0
+		index_externals = 0
+
+		// for absolute paths in pictures and internal links
+		absRefPrefix = http://example.com/
+
+		// no spam protection here since this freaks Facebook Instant Articles out
+		spamProtectEmailAddresses = 0
+
+	}
+
+	10 = USER_INT
+	10 {
+		userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+		extensionName = RkwRss
+		pluginName = Rkwrssfeed
+		vendorName = RKW
+		controller = Rss
+		switchableControllerActions {
+
+			# Again: Controller-Name and Action
+			Rss {
+				1 = rss
+			}
+		}
+
+		view < plugin.tx_rkwrss.view
+		persistence < plugin.tx_rkwrss.persistence
+		settings < plugin.tx_rkwrss.settings
+	}
+}
+
+
+TxRkwRssInstantArticles < TxRkwRssPage
+TxRkwRssInstantArticles {
+
+	typeNum = {$plugin.tx_rkwrss.settings.instantArticles.typeNum}
+	10 {
+
+
+		switchableControllerActions {
+
+
+			# Again: Controller-Name and Action
+			Rss {
+				1 = instantArticles
+
+			}
+		}
+	}
+
+}
+
+# Add RSS-Feed to page
+page {
+
+	headerData {
+
+		999 = TEXT
+		999 {
+
+			wrap = <link rel="alternate" type="application/rss+xml" title="{$plugin.tx_rkwrss.settings.rss.feedName}" href="|" />
+			typolink {
+				parameter = {$plugin.tx_rkwrss.settings.rss.pageUid}
+				additionalParams = &type={$plugin.tx_rkwrss.settings.rss.typeNum}
+				returnLast = url
+			}
+		}
+	}
+}
