@@ -10,7 +10,7 @@
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = array(
+$EM_CONF[$_EXTKEY] = [
 	'title' => 'RKW RSS',
 	'description' => 'RSS-Feed with included contents, so it can be used e.g. for Facebook Instant Articles',
 	'category' => 'plugin',
@@ -21,16 +21,14 @@ $EM_CONF[$_EXTKEY] = array(
 	'uploadfolder' => '0',
 	'createDirs' => '',
 	'clearCacheOnLoad' => 0,
-	'version' => '7.6.3',
-	'constraints' => array(
-		'depends' => array(
-            'extbase' => '7.6.0-7.6.99',
-            'fluid' => '7.6.0-7.6.99',
+	'version' => '8.7.0',
+	'constraints' => [
+		'depends' => [
             'typo3' => '7.6.0-7.6.99',
-		),
-		'conflicts' => array(
-		),
-		'suggests' => array(
-		),
-	),
-);
+		],
+		'conflicts' => [
+		],
+		'suggests' => [
+		],
+	],
+];
