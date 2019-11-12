@@ -1,58 +1,6 @@
 
-plugin.tx_rkwrss {
-	view {
-		# cat=plugin.tx_rkwrss/file; type=string; label=Path to template root (FE)
-		templateRootPath = EXT:rkw_rss/Resources/Private/Templates/
-		# cat=plugin.tx_rkwrss/file; type=string; label=Path to template partials (FE)
-		partialRootPath = EXT:rkw_rss/Resources/Private/Partials/
-		# cat=plugin.tx_rkwrss/file; type=string; label=Path to template layouts (FE)
-		layoutRootPath = EXT:rkw_rss/Resources/Private/Layouts/
-	}
-	persistence {
-		# cat=plugin.tx_rkwrss//a; type=string; label=Default storage PID
-		storagePid =
-	}
-	
-	settings {
+# !!! DEPRECATED – only for compatibility reasons !!!
+# We're moving from ".ts" and ".txt" to ".typoscript".
+# @see: https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/8.7.x/Feature-78161-IntroduceTypoScriptFileExtension.html
 
-		rss {
-
-			# cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
-			pageUid= 1
-
-			# cat=plugin.tx_rkwrss; type=integer; label=TypeNum for RSS-Feed
-			typeNum= 1449588488
-
-			# cat=plugin.tx_rkwrss; type=integer; label=Number of results
-			limit = 50
-
-			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
-			orderField = crdate
-
-			# cat=plugin.tx_rkwrss; type=integer; label=ColPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
-			contentColPos = 0
-
-			# cat=plugin.tx_rkwrss; type=string; label=Name for RSS-Feed
-			feedName = RSS Feed
-
-			# cat=plugin.tx_rkwrss; type=string; label=Page Description
-			feedDescription = Description
-
-			# cat=plugin.tx_rkwrss; type=string; label=Relative Path to Icon of Feed
-			feedIcon = fileadmin/images/favicon-32x32.png
-
-			# cat=plugin.tx_rkwrss; type=string; label=Copyright hint
-			copyrightHint = Example.com
-
-			# cat=plugin.tx_rkwrss; type=string; label=Tracking Account Id
-			trackingAccountId = 123456
-		}
-
-		instantArticles < .rss
-		instantArticles {
-
-			# cat=plugin.tx_rkwrss; type=integer; label=TypeNum for RSS-Feed
-			typeNum= 1449588489
-		}
-	}
-}
+<INCLUDE_TYPOSCRIPT: source="FILE:./constants.typoscript">

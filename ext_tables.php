@@ -1,12 +1,30 @@
 <?php
-if (!defined('TYPO3_MODE')) {
-	die('Access denied.');
-}
+defined('TYPO3_MODE') || die('Access denied.');
 
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-	'RKW.' . $_EXTKEY,
-	'Rkwrssfeed',
-	'RKW RSS'
+call_user_func(
+    function($extKey)
+    {
+
+        //=================================================================
+        // Register Plugin
+        //=================================================================
+        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+            'RKW.' . $extKey,
+            'Rkwrssfeed',
+            'RKW RSS'
+        );
+
+
+        //=================================================================
+        // Add TypoScript
+        //=================================================================
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+            $extKey,
+            'Configuration/TypoScript',
+            'RKW Rss'
+        );
+
+    },
+    $_EXTKEY
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'RKW Rss');
