@@ -1,6 +1,6 @@
 <?php
-
 namespace RKW\RkwRss\Cache;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -55,7 +55,6 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
     public function getIdentifier()
     {
         return $this->_identifier;
-        //===
     }
 
 
@@ -96,12 +95,9 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
             return false;
         }
 
-        //===
-
         return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')
             ->getCache($this->_key)
             ->get($this->getIdentifier());
-        //===
     }
 
 
@@ -129,14 +125,12 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
         ) {
             return $this;
         }
-        //===
 
         \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')
             ->getCache($this->_key)
             ->set($this->getIdentifier(), $data, $tags, $lifetime);
 
         return $this;
-        //===
     }
 
 
@@ -147,9 +141,9 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function getCacheManager()
     {
-
-        return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager');
-        //===
+        /** @var $cacheManager \TYPO3\CMS\Core\Cache\CacheManager */
+        $cacheManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager');
+        return $cacheManager;
     }
 
 
@@ -168,7 +162,6 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
         }
 
         return $this->contextMode;
-        //===
     }
 
     /**
@@ -188,7 +181,6 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
         }
 
         return $this->environmentMode;
-        //===
     }
 
 

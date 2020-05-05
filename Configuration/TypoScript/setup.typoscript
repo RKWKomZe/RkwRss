@@ -3,53 +3,76 @@ config.tx_extbase{
 	persistence{
 		classes {
 
-			RKW\RkwRss\Domain\Model\Pages {
-				mapping {
-					tableName = pages
 
-					# on pages tables it's the doktype
-					# if we set an value, we filter by it
-					# if do not set anything, all pages are found
-					recordType =
+            RKW\RkwBasics\Domain\Model\Pages {
+                subclasses {
+                    Tx_RkwRss_Pages = RKW\RkwRss\Domain\Model\Pages
+                }
+            }
 
-					columns {
-						uid.mapOnProperty 		= uid
-						pid.mapOnProperty		= pid
-						sorting.mapOnProperty = sorting
-						title.mapOnProperty 	= title
-						subtitle.mapOnProperty 	= subtitle
-						tstamp.mapOnProperty 	= tstamp
-						crdate.mapOnProperty 	= crdate
-					}
+            RKW\RkwBasics\Domain\Model\PagesLanguageOverlay {
+                subclasses {
+                    Tx_RkwRss_PagesLanguageOverlay = RKW\RkwRss\Domain\Model\PagesLanguageOverlay
+                }
+            }
 
-				}
-			}
+            RKW\RkwRss\Domain\Model\Pages {
+                mapping {
+                    tableName = pages
 
-			# set model for mapping
-			RKW\RkwRss\Domain\Model\PagesLanguageOverlay {
+                    # on pages tables it's the doktype
+                    # if we set an value, we filter by it
+                    # if we do not set anything, all pages are found
+                    recordType =
 
-				mapping {
+                    # mapping to properties of class
+                    columns {
+                        uid.mapOnProperty = uid
+                        pid.mapOnProperty = pid
+                        sorting.mapOnProperty = sorting
+                        crdate.mapOnProperty = crdate
+                        tstamp.mapOnProperty = tstamp
+                        hidden.mapOnProperty = hidden
+                        deleted.mapOnProperty = deleted
+                        title.mapOnProperty = title
+                        subtitle.mapOnProperty = subtitle
+                        no_search.mapOnProperty = noSearch
+                        lastUpdated.mapOnProperty = lastUpdated
+                        abstract.mapOnProperty = abstract
+                    }
+                }
+            }
 
-					# set table name to map to
-					tableName = pages_language_overlay
+            RKW\RkwRss\Domain\Model\PagesLanguageOverlay {
 
-					# on pages tables it's the doktype
-					# if we set an value, we filter by it
-					# if do not set anything, all pages are found
-					recordType =
+                mapping {
 
-					# mapping to properties of class
-					columns {
-						uid.mapOnProperty 		= uid
-						pid.mapOnProperty		= pid
-						title.mapOnProperty 	= title
-						subtitle.mapOnProperty 	= subtitle
-						tstamp.mapOnProperty 	= tstamp
-						crdate.mapOnProperty 	= crdate
-						sys_language_uid.mapOnProperty = sysLanguageUid
-					}
-				}
-			}
+                    # set table name to map to
+                    tableName = pages_language_overlay
+
+                    # on pages tables it's the doktype
+                    # if we set an value, we filter by it
+                    # if do not set anything, all pages are found
+                    recordType =
+
+                    # mapping to properties of class
+                    columns {
+                        uid.mapOnProperty = uid
+                        pid.mapOnProperty = pid
+                        sorting.mapOnProperty = sorting
+                        crdate.mapOnProperty = crdate
+                        tstamp.mapOnProperty = tstamp
+                        hidden.mapOnProperty = hidden
+                        deleted.mapOnProperty = deleted
+                        title.mapOnProperty = title
+                        subtitle.mapOnProperty = subtitle
+                        no_search.mapOnProperty = noSearch
+                        lastUpdated.mapOnProperty = lastUpdated
+                        abstract.mapOnProperty = abstract
+                        sys_language_uid.mapOnProperty = sysLanguageUid
+                    }
+                }
+            }
 		}
 	}
 }
@@ -68,35 +91,39 @@ plugin.tx_rkwrss {
 	
 	settings {
 
-		rss {
+        global {
 
-			# cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
- 			pageUid= {$plugin.tx_rkwrss.settings.rss.pageUid}
+	        # cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
+ 			pageUid= {$plugin.tx_rkwrss.settings.global.pageUid}
+
+			# max items in feed
+			limit = {$plugin.tx_rkwrss.settings.global.limit}
+
+			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
+			orderField = {$plugin.tx_rkwrss.settings.global.orderField}
+
+			# cat=plugin.tx_rkwrss; type=string; label=List of colPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
+			contentColPos = {$plugin.tx_rkwrss.settings.global.contentColPos}
+
+        }
+
+		rss {
 
 			# cat=plugin.tx_rkwrss; type=integer; label=TypeNum for RSS-Feed
 			typeNum = {$plugin.tx_rkwrss.settings.rss.typeNum}
-				
-			# max items in feed
-			limit = {$plugin.tx_rkwrss.settings.rss.limit}
-	
-			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
-			orderField = {$plugin.tx_rkwrss.settings.rss.orderField}
-	
-			# cat=plugin.tx_rkwrss; type=integer; label=ColPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
-			contentColPos = {$plugin.tx_rkwrss.settings.rss.contentColPos}
-	
+
 			# cat=plugin.tx_rkwrss; type=string; label=Name for RSS-Feed
 			feedName = {$plugin.tx_rkwrss.settings.rss.feedName}
-	
+
 			# cat=plugin.tx_rkwrss; type=string; label=Page Description
 			feedDescription = {$plugin.tx_rkwrss.settings.rss.feedDescription}
-	
+
 			# cat=plugin.tx_rkwrss; type=string; label=Relative Path to Icon of Feed
 			feedIcon = {$plugin.tx_rkwrss.settings.rss.feedIcon}
-	
+
 			# cat=plugin.tx_rkwrss; type=string; label=Copyright hint
 			copyrightHint = {$plugin.tx_rkwrss.settings.rss.copyrightHint}
-	
+
 			# cat=plugin.tx_rkwrss; type=string; label=Tracking Account Id
 			trackingAccountId = {$plugin.tx_rkwrss.settings.rss.trackingAccountId}
 		}
@@ -104,20 +131,9 @@ plugin.tx_rkwrss {
 
 		instantArticles {
 
-			# cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
-			pageUid= {$plugin.tx_rkwrss.settings.instantArticles.pageUid}
-
 			# cat=plugin.tx_rkwrss; type=integer; label=TypeNum for RSS-Feed
 			typeNum = {$plugin.tx_rkwrss.settings.instantArticles.typeNum}
 
-			# max items in feed
-			limit = {$plugin.tx_rkwrss.settings.instantArticles.limit}
-
-			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
-			orderField = {$plugin.tx_rkwrss.settings.instantArticles.orderField}
-
-			# cat=plugin.tx_rkwrss; type=integer; label=ColPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
-			contentColPos = {$plugin.tx_rkwrss.settings.instantArticles.contentColPos}
 
 			# cat=plugin.tx_rkwrss; type=string; label=Name for RSS-Feed
 			feedName = {$plugin.tx_rkwrss.settings.instantArticles.feedName}
@@ -140,75 +156,64 @@ plugin.tx_rkwrss {
 	// lib for content rendering
 	libs {
 
+        content = COA
+        content {
 
-		instantArticles < tt_content
-		instantArticles {
 
-			// no responsive images here!
-			image.20.1.layoutKey = default
-			textpic.20.1.layoutKey = default
+            // rendering for RSS
+            rss = COA
+            rss {
+                10 = LOAD_REGISTER
+                10 {
+                    colPos.cObject = TEXT
+                    colPos.cObject {
+                        field = colPos
+                        ifEmpty.cObject = TEXT
+                        ifEmpty.cObject {
+                            value.current = 1
+                            ifEmpty = 0
+                        }
 
-			// no wrapping divs here
-			stdWrap.innerWrap >
+                    }
+                    pid.cObject = TEXT
+                    pid.cObject {
+                        field = pid
+                        ifEmpty.cObject = TEXT
+                        ifEmpty.cObject {
+                            value.current = 1
+                            ifEmpty = 1
+                        }
+                    }
+                }
 
-			// remove all data-atttributes from RkwBasics-Extension with eTracker
-			stdWrap.HTMLparser {
 
-				keepNonMatchedTags = 1
-				removeTags = div
-				tags {
+                20 = CONTENT
+                20 {
+                    table = tt_content
+                    select {
 
-					// Remove special attributes
-					a.fixAttrib.onclick.unset = 1
-					a.fixAttrib.data-tracker-type.unset = 1
-					a.fixAttrib.data-tracker-filename.unset = 1
-					a.fixAttrib.data-tracker-project.unset = 1
+                        pidInList = {register:pid}
+                        pidInList.insertData = 1
 
-					// Instant Articles only allows absolute values
-					iframe.fixAttrib {
-						width.set = 600
-						height.set = 450
-					}
+                        orderBy = sorting
+                        where = (FIND_IN_SET(colPos, '{register:colPos}'))
+                        where.insertData = 1
+                    }
+                }
 
-					// Instant Articles only supports h1 and h2
-					h3.remap = h2
-					h4.remap = h2
-					h5.remap = h2
-					h6.remap = h2
-				}
-			}
-		}
+                90 = RESTORE_REGISTER
+            }
 
-		rss < .instantArticles
-		rss {
-
-			// remove unsupported tags
-			stdWrap.HTMLparser {
-				removeTags = div, iframe, script, figcaption
-			}
-
-		}
+            // Rendering for instantArticles
+            instantArticles < .rss
+        }
 	}
 }
 
+
+
+
 plugin.tx_rkwrss._CSS_DEFAULT_STYLE (
-	textarea.f3-form-error {
-		background-color:#FF9F9F;
-		border: 1px #FF0000 solid;
-	}
-
-	input.f3-form-error {
-		background-color:#FF9F9F;
-		border: 1px #FF0000 solid;
-	}
-
-	.typo3-messages .message-error {
-		color:red;
-	}
-
-	.typo3-messages .message-ok {
-		color:green;
-	}
 
 )
 
@@ -268,9 +273,7 @@ txRkwRssInstantArticles {
 	typeNum = {$plugin.tx_rkwrss.settings.instantArticles.typeNum}
 	10 {
 
-
 		switchableControllerActions {
-
 
 			# Again: Controller-Name and Action
 			Rss {

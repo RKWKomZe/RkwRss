@@ -23,30 +23,10 @@ namespace RKW\RkwRss\Domain\Model;
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class PagesLanguageOverlay extends Pages
+class PagesLanguageOverlay extends \RKW\RkwBasics\Domain\Model\PagesLanguageOverlay
 {
 
-
-    /**
-     * sysLanguageUid
-     *
-     * @var int
-     */
-    protected $sysLanguageUid;
-
-
-    /**
-     * Returns the sorting
-     *
-     * @return int $sorting
-     */
-    public function getSysLanguageUid()
-    {
-        return $this->sysLanguageUid;
-        //===
-    }
 
 
 }
 
-?>

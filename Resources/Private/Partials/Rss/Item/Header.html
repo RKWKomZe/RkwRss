@@ -1,0 +1,38 @@
+{namespace rkwRss=RKW\RkwRss\ViewHelpers}
+
+<html xmlns="http://purl.org/rss/1.0/modules/content" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+				<f:comment>A string that uniquely identifies the item.</f:comment>
+				<guid>
+					<f:uri.page pageUid='{settings.pageUid}' absolute='1' />index.php?id={page.uid}
+				</guid>
+
+				<f:comment>The URL of the item.</f:comment>
+				<link>
+					<f:uri.page absolute="TRUE" pageUid="{page.uid}" />
+				</link>
+
+				<f:comment>Indicates when the item was published.</f:comment>
+				<pubDate>
+					<rkwRss:DateFormatRss dateTime="{page.publicationTime}" />
+				</pubDate>
+
+				<f:comment>The title of the item.</f:comment>
+				<title>
+					<f:format.cdata>
+						{page.title}
+					</f:format.cdata>
+				</title>
+
+				<f:comment>The item synopsis.</f:comment>
+				<description>
+					<f:format.cdata>
+						<f:if condition="{page.txRkwbasicsTeaserImage}" >
+							<f:then>
+								<f:image src="{page.txRkwbasicsTeaserImage.uid}" absolute="1" treatIdAsReference="1" width="200"/>
+							</f:then>
+						</f:if>
+						<p>{page.abstract}</p>
+					</f:format.cdata>
+				</description>
+</html>

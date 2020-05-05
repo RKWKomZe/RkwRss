@@ -15,24 +15,29 @@ plugin.tx_rkwrss {
 	
 	settings {
 
-		rss {
+        global {
+
 
 			# cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
 			pageUid= 1
 
+            # cat=plugin.tx_rkwrss; type=integer; label=Number of results
+            limit = 50
+
+            # cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
+            orderField = lastUpdated
+
+            # cat=plugin.tx_rkwrss; type=string; label=List of colPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
+            contentColPos = 0
+
+        }
+
+		rss {
+
 			# cat=plugin.tx_rkwrss; type=integer; label=TypeNum for RSS-Feed
 			typeNum= 1449588488
 
-			# cat=plugin.tx_rkwrss; type=integer; label=Number of results
-			limit = 50
-
-			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
-			orderField = crdate
-
-			# cat=plugin.tx_rkwrss; type=integer; label=ColPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
-			contentColPos = 0
-
-			# cat=plugin.tx_rkwrss; type=string; label=Name for RSS-Feed
+		    # cat=plugin.tx_rkwrss; type=string; label=Name for RSS-Feed
 			feedName = RSS Feed
 
 			# cat=plugin.tx_rkwrss; type=string; label=Page Description
