@@ -1,0 +1,53 @@
+{namespace rkwRss=RKW\RkwRss\ViewHelpers}
+
+<html xmlns="http://purl.org/rss/1.0/modules/content" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+		<f:comment>The language the channel is written in.</f:comment>
+		<language>{feedLanguage}</language>
+
+		<f:comment>The name of the channel. It's how people refer to your service.</f:comment>
+		<title>
+			<f:format.cdata>
+				{settings.feedName}
+			</f:format.cdata>
+		</title>
+
+		<f:comment>Phrase or sentence describing the channel.</f:comment>
+		<description>
+			<f:format.cdata>
+				{settings.feedDescription}
+			</f:format.cdata>
+		</description>
+
+		<f:comment>The URL to the HTML website corresponding to the channel.</f:comment>
+		<link><f:uri.page pageUid="{settings.pageUid}" pageType="{settings.typeNum}" absolute="1" /></link>
+		<atom:link href="{f:uri.page(pageUid: settings.pageUid, pageType: settings.typeNum, absolute: 1)}" rel="self" type="application/rss+xml" />
+
+		<image>
+
+			<f:comment>The URL of a GIF, JPEG or PNG image that represents the channel.</f:comment>
+			<url><f:uri.page pageUid="{settings.pageUid}" absolute="1" />{settings.feedIcon}</url>
+
+			<f:comment>Describes the image. Note, in practice the image title and link should have the same value as the channel's title and link.</f:comment>
+			<title>
+				<f:format.cdata>
+					{settings.feedName}
+				</f:format.cdata>
+			</title>
+
+			<f:comment>The URL of the site, when the channel is rendered, the image is a link to the site. Note, in practice the image title and link should have the same value as the channel's title and link.</f:comment>
+			<link><f:uri.page pageUid="{settings.pageUid}" pageType="{settings.typeNum}" absolute="1" /></link>
+		</image>
+
+
+		<f:comment>The publication date for the content in the channel. For example, the New York Times publishes on a daily basis, the publication date flips once every 24 hours. That's when the pubDate of the channel changes.</f:comment>
+		<pubDate>
+			<rkwRss:DateFormatRss dateTime="{publicationTime}" />
+		</pubDate>
+
+		<f:comment>The last time the content of the channel changed.</f:comment>
+		<lastBuildDate>
+			<rkwRss:DateFormatRss dateTime="{buildTime}" />
+		</lastBuildDate>
+
+</html>

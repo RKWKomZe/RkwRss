@@ -69,8 +69,5 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
                 $query->equals('sysLanguageUid', intval($languageUid))
             )->setLimit(intval($limit))
             ->execute();
-        //===
     }
 }
-
-?>

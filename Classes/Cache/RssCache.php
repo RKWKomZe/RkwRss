@@ -23,7 +23,7 @@ namespace RKW\RkwRss\Cache;
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RssCache extends \RKW\RkwSearch\OrientDb\Cache\CacheAbstract
+class RssCache extends CacheAbstract
 {
 
 

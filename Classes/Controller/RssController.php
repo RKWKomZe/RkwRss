@@ -15,6 +15,8 @@ namespace RKW\RkwRss\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class RssController
  *
@@ -94,129 +96,72 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $type = 'rss';
         }
 
-        $maxResults = intval($this->settings[$type]['limit']) ? intval($this->settings[$type]['limit']) : 10;
-        $contentColPos = intval($this->settings[$type]['contentColPos']) ? intval($this->settings[$type]['contentColPos']) : 0;
-        $orderField = $this->settings[$type]['orderField'] ? $this->settings[$type]['orderField'] : 'crdate';
-        $pubDate = $lastBuildDate = 0;
-
-        //=============================
-        // 1. get updated pages
-        $pages = null;
-        try {
-            if ($GLOBALS['TSFE']->sys_language_uid > 0) {
-                $pages = $this->pagesLanguageOverlayRepository->findLatest($GLOBALS['TSFE']->sys_language_uid, $orderField, $maxResults);
-
-            } else {
-                $pages = $this->pagesRepository->findLatest($orderField, $maxResults);
-            }
-
-        } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant pages for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
-        }
-
-
-        //=============================
-        // 2. get contents from pages!
-        // check if something is cached!
-        $results = null;
-        if ($pages) {
-
-            try {
-                if (!$results = $this->getCache()->getContent($pages->getFirst()->getUid() . $type)) {
-
-                    $cObj = $this->configurationManager->getContentObject();
-
-                    /** @var \RKW\RkwRss\Domain\Model\Pages $page */
-                    foreach ($pages as $page) {
-
-                        // if we have an language overlay we need the Pid instead
-                        $pageUid = $page->getUid();
-                        if ($GLOBALS['TSFE']->sys_language_uid > 0) {
-                            $pageUid = $page->getPid();
-                        }
-
-                        // get contents
-                        $cConf = array(
-                            'table'     => 'tt_content',
-                            'select.'   => array(
-                                'pidInList'     => $pageUid,
-                                'orderBy'       => 'sorting',
-                                'where'         => 'colPos = ' . intval($contentColPos), // . ' AND CType IN (\'header\', \'text\', \'textpic\')',
-                                'languageField' => 'sys_language_uid',
-                            ),
-                            'renderObj' => '< plugin.tx_rkwrss.libs.' . $type,
-                        );
-
-
-                        if ($contentHtml = $cObj->render($cObj->getContentObject('CONTENT'), $cConf)) {
-
-                            $pubDate = $page->getCrdate();
-                            $getterPubDate = 'get' . \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($orderField);
-                            if (method_exists($page, $getterPubDate)) {
-                                $pubDate = $page->$getterPubDate();
-                            }
-
-                            $results[] = array(
-                                'uid'         => $page->getUid(),
-                                'title'       => $page->getTitle(),
-                                'subtitle'    => $page->getSubtitle(),
-                                'abstract'    => $page->getAbstract() ? $page->getAbstract() : $page->getTxRkwbasicsTeaserText(),
-                                'teaserImage' => $page->getTxRkwbasicsTeaserImage(),
-                                'tstamp'      => $page->getTstamp(),
-                                'crdate'      => $page->getCrdate(),
-                                'pubDate'     => $pubDate,
-                                'content'     => $contentHtml,
-                            );
-                        }
-                    }
-
-
-                    // flush caches
-                    $this->getCache()->getCacheManager()->flushCachesByTag('rkwrss_contents');
-
-                    // save results in cache
-                    $this->getCache()->setContent(
-                        $results,
-                        array(
-                            'rkwrss_contents',
-                        )
-                    );
-
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully rebuilt RSS feed.'));
-
-                } else {
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully loaded RSS feed from cache.'));
-                }
-
-
-            } catch (\Exception $e) {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant contents for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
-            }
-        }
-
-        // set pubDate based on first content
-        if (
-            (is_array($results))
-            && (is_array($results[0]))
-        ) {
-            $pubDate = $lastBuildDate = $results[0]['pubDate'];
-        }
-
-        if (!$pubDate) {
-            $pubDate = $lastBuildDate = time();
-        }
-
-        return array(
-            'pages'         => $results,
-            'pubDate'       => $pubDate,
-            'lastBuildDate' => $lastBuildDate,
-            'currentDate'   => time(),
+        $feed = [
+            'currentTime'   => time(),
+            'buildTime' => time(),
+            'publicationTime' => time(),
+            'pages' => [],
             'feedLanguage'  => $GLOBALS['TSFE']->config['config']['htmlTag_langKey'],
             'type'          => $type,
-            'settings'      => $this->settings[$type] // override settings with type-specific settings
-        );
-        //===
+            'settings'      => array_merge($this->settings['global'], $this->settings[$type]) // override settings with type-specific settings
+        ];
 
+        if (!$feedCache = $this->getCache()->getContent($type)) {
+
+            $maxResults = intval($this->settings['global']['limit']) ? intval($this->settings['global']['limit']) : 10;
+            $orderField = $this->settings['global']['orderField'] ? $this->settings['global']['orderField'] : 'lastUpdated';
+
+            //=============================
+            // 1. get pages
+            $pages = null;
+            $languageUid = $GLOBALS['TSFE']->sys_language_uid;
+            try {
+                if ($languageUid > 0) {
+                    $pages = $this->pagesLanguageOverlayRepository->findLatest($languageUid, $orderField, $maxResults);
+
+                } else {
+                    $pages = $this->pagesRepository->findLatest($orderField, $maxResults);
+                }
+
+            } catch (\Exception $e) {
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant pages for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
+            }
+
+            //=============================
+            // 2. set some results and cache it
+            if ($pages) {
+                $feedCache = [
+                    'publicationTime' => $pages->getFirst()->getPublicationTime(),
+                    'buildTime' => time(),
+                    'pages' => $pages
+                ];
+
+                // flush caches
+                $this->getCache()->getCacheManager()->flushCachesByTag('rkwrss_contents');
+
+                // save results in cache
+                $this->getCache()->setContent(
+                    $feedCache,
+                    array(
+                        'rkwrss_contents',
+                    )
+                );
+            }
+
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully rebuilt RSS feed.'));
+
+        } else {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully loaded RSS feed from cache.'));
+        }
+
+        // override data from cache array
+        if ($feedCache) {
+            $feed['buildTime'] = $feedCache['buildTime'];
+            $feed['publicationTime'] = $feedCache['publicationTime'];
+            $feed['pages'] = $feedCache['pages'];
+        }
+
+        return $feed;
     }
 
 
@@ -233,7 +178,6 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         }
 
         return $this->logger;
-        //===
     }
 
 
@@ -250,7 +194,6 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         }
 
         return $this->cache;
-        //===
     }
 
 }
