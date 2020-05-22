@@ -7,17 +7,17 @@
 
 						<article>
 
-							<!-- Header -->
+							<f:comment>Header</f:comment>
 							<f:if condition="{page.subtitle}">
 								<header>
 									<h2>{page.subtitle}</h2>
 								</header>
 							</f:if>
 
-							<!-- Content -->
+							<f:comment>Content</f:comment>
 							<f:cObject typoscriptObjectPath="plugin.tx_rkwrss.libs.content.{type}" data="{colPos: settings.contentColPos, pid: page.uid}" />
 
-							<!-- Footer -->
+							<f:comment>Footer</f:comment>
 							<footer>
 								<small>
 									<f:format.html parseFuncTSPath="lib.parseFunc">

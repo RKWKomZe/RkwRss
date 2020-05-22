@@ -67,9 +67,7 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
     public function setIdentifier($identifier)
     {
         $this->_identifier = sha1($identifier);
-
         return $this;
-        //===
     }
 
 
@@ -106,11 +104,11 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
      *
      * @param mixed $data
      * @param array $tags
-     * @param integer $lifetime
      * @param mixed $identifier
+     * @param integer $lifetime
      * @return $this
      */
-    public function setContent($data, $tags = array(), $lifetime = 86400, $identifier = null)
+    public function setContent($data, $tags = array(), $identifier = null, $lifetime = 86400)
     {
 
         if ($identifier) {

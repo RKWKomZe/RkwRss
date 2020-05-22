@@ -144,7 +144,8 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
                     $feedCache,
                     array(
                         'rkwrss_contents',
-                    )
+                    ),
+                    $type
                 );
             }
 
