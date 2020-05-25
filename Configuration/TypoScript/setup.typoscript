@@ -73,6 +73,11 @@ config.tx_extbase{
                     }
                 }
             }
+            RKW\RkwRss\Domain\Model\TtContent {
+                mapping {
+                    tableName = tt_content
+                }
+            }
 		}
 	}
 }
@@ -93,8 +98,12 @@ plugin.tx_rkwrss {
 
         global {
 
+            # @deprecated
 	        # cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
  			pageUid= {$plugin.tx_rkwrss.settings.global.pageUid}
+
+ 			# cat=plugin.tx_rkwrss; type=integer; label=RootPid for RSS-Feed
+            rootPid= {$plugin.tx_rkwrss.settings.global.rootPid}
 
 			# max items in feed
 			limit = {$plugin.tx_rkwrss.settings.global.limit}
@@ -102,8 +111,12 @@ plugin.tx_rkwrss {
 			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
 			orderField = {$plugin.tx_rkwrss.settings.global.orderField}
 
+            # @deprecated
 			# cat=plugin.tx_rkwrss; type=string; label=List of colPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
 			contentColPos = {$plugin.tx_rkwrss.settings.global.contentColPos}
+
+            # cat=plugin.tx_rkwrss; type=string; label=Column-name and value that is used to fetch contents from (for e.g. Facebook Instant Articles)
+            contentColumn = {$plugin.tx_rkwrss.settings.global.contentColumn}
 
         }
 
@@ -152,66 +165,10 @@ plugin.tx_rkwrss {
 			
 		}
 	}
-
-	// lib for content rendering
-	libs {
-
-        content = COA
-        content {
-
-
-            // rendering for RSS
-            rss = COA
-            rss {
-                10 = LOAD_REGISTER
-                10 {
-                    colPos.cObject = TEXT
-                    colPos.cObject {
-                        field = colPos
-                        ifEmpty.cObject = TEXT
-                        ifEmpty.cObject {
-                            value.current = 1
-                            ifEmpty = 0
-                        }
-
-                    }
-                    pid.cObject = TEXT
-                    pid.cObject {
-                        field = pid
-                        ifEmpty.cObject = TEXT
-                        ifEmpty.cObject {
-                            value.current = 1
-                            ifEmpty = 1
-                        }
-                    }
-                }
-
-
-                20 = CONTENT
-                20 {
-                    table = tt_content
-                    select {
-
-                        pidInList = {register:pid}
-                        pidInList.insertData = 1
-
-                        orderBy = sorting
-                        where = (FIND_IN_SET(colPos, '{register:colPos}'))
-                        where.insertData = 1
-                    }
-                }
-
-                90 = RESTORE_REGISTER
-            }
-
-            // Rendering for instantArticles
-            instantArticles < .rss
-        }
-	}
 }
 
 
-
+#=================================================================================
 
 plugin.tx_rkwrss._CSS_DEFAULT_STYLE (
 
@@ -282,7 +239,6 @@ txRkwRssInstantArticles {
 			}
 		}
 	}
-
 }
 
 # Add RSS-Feed to page
@@ -302,3 +258,7 @@ page {
 		}
 	}
 }
+
+[globalVar = GP:no_rss = 1]
+    page.headerData.999 >
+[end]
