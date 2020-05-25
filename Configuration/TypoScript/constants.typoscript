@@ -28,6 +28,7 @@ plugin.tx_rkwrss {
 
             # cat=plugin.tx_rkwrss; type=string; label=Column-name and value that is used to fetch contents from (for e.g. Facebook Instant Articles)
             contentColumn = colpos_0
+
         }
 
 		rss {
