@@ -21,7 +21,7 @@ Otherwise your changes will be overwritten the next time you save the extension 
 			<f:for each="{pages}" as="page" iteration="iterator">
 				<item>
 					<f:render partial="Rss/Item/Header" arguments="{_all}" />
-					<f:render partial="Rss/Item/InstantArticles" arguments="{_all}" />
+					<f:render partial="Rss/Item/Body" section="InstantArticles" arguments="{_all}" />
 				</item>
 			</f:for>
 		</f:if>

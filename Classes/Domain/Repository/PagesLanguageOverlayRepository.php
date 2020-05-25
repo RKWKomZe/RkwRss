@@ -48,14 +48,15 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
     /**
      * Find the latest pages
      *
+     * @param int $rootPid
      * @param integer $languageUid LanguageUid for query
      * @param string $field Field to order by
      * @param integer $limit Number of items to fetch
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function findLatest($languageUid, $field = 'crdate', $limit = 100)
+    public function findLatest($rootPid, $languageUid, $field = 'crdate', $limit = 100)
     {
-
 
         $query = $this->createQuery();
         $query->setOrderings(
@@ -64,10 +65,30 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
             )
         );
 
-        return $query
-            ->matching(
-                $query->equals('sysLanguageUid', intval($languageUid))
+        return $query->matching(
+                $query->logicalAnd(
+                    $query->equals('sysLanguageUid', intval($languageUid)),
+                    $query->in('pid', $this->getPidList($rootPid))
+                )
             )->setLimit(intval($limit))
             ->execute();
+    }
+
+
+    /**
+     * Get all subpages of given PIDs
+     *
+     * @param int $rootPid
+     * @param int $depth
+     * @return array
+     */
+    protected function getPidList($rootPid = 0, $depth = 999999)
+    {
+
+        /** @var \TYPO3\CMS\Core\Database\QueryGenerator $queryGenerator */
+        $queryGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\QueryGenerator');
+        $childPids = explode(',', $queryGenerator->getTreeList($rootPid, $depth, 0, 1));
+
+        return $childPids;
     }
 }

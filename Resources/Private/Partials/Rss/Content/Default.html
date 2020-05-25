@@ -1,0 +1,14 @@
+{namespace rkwRss=RKW\RkwRss\ViewHelpers}
+
+<html xmlns="http://purl.org/rss/1.0/modules/content" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+	<f:section name="Default">
+		<f:for each="{page.contents}" as="content" iteration="iterator">
+			<f:if condition="{content.header}">
+				<h2>{content.header}</h2>
+			</f:if>
+			<f:format.html>{content.bodytext}</f:format.html>
+		</f:for>
+	</f:section>
+
+</html>
