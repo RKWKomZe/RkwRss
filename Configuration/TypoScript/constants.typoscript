@@ -17,18 +17,25 @@ plugin.tx_rkwrss {
 
         global {
 
-
+            # @deprecated
 			# cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
 			pageUid= 1
 
+            # cat=plugin.tx_rkwrss; type=integer; label=RootPid for RSS-Feed
+            rootPid= 1
+
             # cat=plugin.tx_rkwrss; type=integer; label=Number of results
-            limit = 50
+            limit = 10
 
             # cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
             orderField = lastUpdated
 
-            # cat=plugin.tx_rkwrss; type=string; label=List of colPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
+            # @deprecated
+            # cat=plugin.tx_rkwrss; type=int; label=colPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
             contentColPos = 0
+
+            # cat=plugin.tx_rkwrss; type=string; label=Column-name and value that is used to fetch contents from (for e.g. Facebook Instant Articles)
+            contentColumn = colpos_0
 
         }
 

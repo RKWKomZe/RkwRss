@@ -44,7 +44,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     protected $pagesRepository;
 
     /**
-     * pagesRepository
+     * pagesLanguageOverlayRepository
      *
      * @var \RKW\RkwRss\Domain\Repository\PagesLanguageOverlayRepository
      * @inject
@@ -53,9 +53,18 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
 
     /**
+     * ttContentRepository
+     *
+     * @var \RKW\RkwRss\Domain\Repository\TtContentRepository
+     * @inject
+     */
+    protected $ttContentRepository;
+
+    /**
      * @var \TYPO3\CMS\Core\Log\Logger
      */
     protected $logger;
+
 
 
     /**
@@ -96,6 +105,34 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $type = 'rss';
         }
 
+        // override global settings with type-specific settings
+        $mergedSettings = array_merge(
+            $this->settings['global'],
+            $this->settings[$type]
+        );
+
+        $maxResults = intval(
+            $mergedSettings['limit'] ? $mergedSettings['limit'] : 10
+        );
+
+        $orderField = preg_replace(
+            '#[^a-zA-Z0-9_-]+#',
+            '',
+            $mergedSettings['orderField'] ? $mergedSettings['orderField'] : 'lastUpdated'
+        );
+
+        $contentColumn = preg_replace(
+            '#[^a-zA-Z0-9_-]+#',
+            '',
+            $mergedSettings['contentColumn'] ? $mergedSettings['contentColumn'] : ($mergedSettings['contentColPos'] ? $mergedSettings['contentColPos'] : 0)
+        );
+
+        $rootPid = intval(
+            $mergedSettings['rootPid'] ? $mergedSettings['rootPid'] : ($mergedSettings['pageUid'] ? $mergedSettings['pageUid'] : 1)
+        );
+
+
+        // define basic values now
         $feed = [
             'currentTime'   => time(),
             'buildTime' => time(),
@@ -103,13 +140,10 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             'pages' => [],
             'feedLanguage'  => $GLOBALS['TSFE']->config['config']['htmlTag_langKey'],
             'type'          => $type,
-            'settings'      => array_merge($this->settings['global'], $this->settings[$type]) // override settings with type-specific settings
+            'settings'      => $mergedSettings,
         ];
 
-        if (!$feedCache = $this->getCache()->getContent($type)) {
-
-            $maxResults = intval($this->settings['global']['limit']) ? intval($this->settings['global']['limit']) : 10;
-            $orderField = $this->settings['global']['orderField'] ? $this->settings['global']['orderField'] : 'lastUpdated';
+        if (!$feedCache = $this->getCache()->getContent($type . '_' . $rootPid . '_' . $orderField)) {
 
             //=============================
             // 1. get pages
@@ -117,23 +151,45 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $languageUid = $GLOBALS['TSFE']->sys_language_uid;
             try {
                 if ($languageUid > 0) {
-                    $pages = $this->pagesLanguageOverlayRepository->findLatest($languageUid, $orderField, $maxResults);
-
+                    $pages = $this->pagesLanguageOverlayRepository->findLatest($rootPid, $languageUid, $orderField, $maxResults);
                 } else {
-                    $pages = $this->pagesRepository->findLatest($orderField, $maxResults);
+                    $pages = $this->pagesRepository->findLatest($rootPid, $orderField, $maxResults);
                 }
 
             } catch (\Exception $e) {
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant pages for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
             }
 
-            //=============================
-            // 2. set some results and cache it
+
             if ($pages) {
+
+                //=============================
+                // 2. get contents of pages
+                try {
+
+                   /** @var \RKW\RkwRss\Domain\Model\Pages $page */
+                    foreach ($pages as $page) {
+
+                        if ($languageUid > 0) {
+                            /** @var \RKW\RkwRss\Domain\Model\PagesLanguageOverlay $page */
+                            $page->setContents($this->ttContentRepository->findAllByColumn($page->getPid(), $contentColumn, $languageUid));
+
+                        } else {
+                            $page->setContents($this->ttContentRepository->findAllByColumn($page->getUid(), $contentColumn));
+                        }
+                    }
+
+                } catch (\Exception $e) {
+                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant contents for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
+                }
+
+
+                //=============================
+                // 3. cache results
                 $feedCache = [
                     'publicationTime' => $pages->getFirst()->getPublicationTime(),
                     'buildTime' => time(),
-                    'pages' => $pages
+                    'pages' => $pages,
                 ];
 
                 // flush caches
@@ -145,7 +201,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
                     array(
                         'rkwrss_contents',
                     ),
-                    $type
+                    $type . '_' . $rootPid . '_' . $orderField
                 );
             }
 
