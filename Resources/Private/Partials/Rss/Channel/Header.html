@@ -20,13 +20,13 @@
 		</description>
 
 		<f:comment>The URL to the HTML website corresponding to the channel.</f:comment>
-		<link><f:uri.page pageUid="{settings.pageUid}" pageType="{settings.typeNum}" absolute="1" /></link>
-		<atom:link href="{f:uri.page(pageUid: settings.pageUid, pageType: settings.typeNum, absolute: 1)}" rel="self" type="application/rss+xml" />
+		<link><f:uri.page pageUid="{settings.rootPid}" pageType="{settings.typeNum}" absolute="1" /></link>
+		<atom:link href="{f:uri.page(pageUid: settings.rootPid, pageType: settings.typeNum, absolute: 1)}" rel="self" type="application/rss+xml" />
 
 		<image>
 
 			<f:comment>The URL of a GIF, JPEG or PNG image that represents the channel.</f:comment>
-			<url><f:uri.page pageUid="{settings.pageUid}" absolute="1" />{settings.feedIcon}</url>
+			<url><f:uri.page pageUid="{settings.rootPid}" absolute="1" />{settings.feedIcon}</url>
 
 			<f:comment>Describes the image. Note, in practice the image title and link should have the same value as the channel's title and link.</f:comment>
 			<title>
@@ -36,7 +36,7 @@
 			</title>
 
 			<f:comment>The URL of the site, when the channel is rendered, the image is a link to the site. Note, in practice the image title and link should have the same value as the channel's title and link.</f:comment>
-			<link><f:uri.page pageUid="{settings.pageUid}" pageType="{settings.typeNum}" absolute="1" /></link>
+			<link><f:uri.page pageUid="{settings.rootPid}" pageType="{settings.typeNum}" absolute="1" /></link>
 		</image>
 
 
