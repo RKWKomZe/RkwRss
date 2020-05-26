@@ -15,8 +15,6 @@ namespace RKW\RkwRss\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 /**
  * Class RssController
  *
