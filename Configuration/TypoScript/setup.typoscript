@@ -82,8 +82,7 @@ config.tx_extbase{
 	}
 }
 
-
-
+#=================================================================================
 plugin.tx_rkwrss {
 	view {
 		templateRootPaths.0 = {$plugin.tx_rkwrss.view.templateRootPath}
@@ -169,13 +168,11 @@ plugin.tx_rkwrss {
 
 
 #=================================================================================
-
 plugin.tx_rkwrss._CSS_DEFAULT_STYLE (
 
 )
 
 #=================================================================================
-
 txRkwRssPage = PAGE
 txRkwRssPage {
 
@@ -223,7 +220,7 @@ txRkwRssPage {
 	}
 }
 
-
+#=================================================================================
 txRkwRssInstantArticles < txRkwRssPage
 txRkwRssInstantArticles {
 
@@ -241,6 +238,7 @@ txRkwRssInstantArticles {
 	}
 }
 
+#=================================================================================
 # Add RSS-Feed to page
 page {
 
@@ -251,7 +249,7 @@ page {
 
 			wrap = <link rel="alternate" type="application/rss+xml" title="{$plugin.tx_rkwrss.settings.rss.feedName}" href="|" />
 			typolink {
-				parameter = {$plugin.tx_rkwrss.settings.rss.pageUid}
+				parameter = {$plugin.tx_rkwrss.settings.global.rootPid}
 				additionalParams = &type={$plugin.tx_rkwrss.settings.rss.typeNum}
 				returnLast = url
 			}
