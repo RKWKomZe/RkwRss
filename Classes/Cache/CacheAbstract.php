@@ -108,7 +108,7 @@ abstract class CacheAbstract implements \TYPO3\CMS\Core\SingletonInterface
      * @param integer $lifetime
      * @return $this
      */
-    public function setContent($data, $tags = array(), $identifier = null, $lifetime = 86400)
+    public function setContent($data, $tags = array(), $identifier = null, $lifetime = 21600)
     {
 
         if ($identifier) {

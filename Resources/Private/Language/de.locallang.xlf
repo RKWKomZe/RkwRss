@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2016-09-28T08:28:36Z" product-name="rkw_rss">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2016-09-28T08:28:36Z" product-name="rkw_rss">
 		<header/>
 		<body>
 
             <trans-unit id="partials.rss.content.default.labelReadMore">
                 <source>Read more on website</source>
+                <target>Weiterlesen auf der Website</target>
             </trans-unit>
 
 		</body>
