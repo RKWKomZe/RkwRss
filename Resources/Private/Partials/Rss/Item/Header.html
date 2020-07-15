@@ -32,7 +32,9 @@
 					<f:image src="{page.txRkwbasicsTeaserImage.uid}" absolute="1" treatIdAsReference="1" width="200"/>
 				</f:then>
 			</f:if>
-			<p>{page.abstract}</p>
+			<f:if condition="{page.abstract}" >
+				<p>{page.abstract}</p>
+			</f:if>
 		</f:format.cdata>
 	</description>
 </html>

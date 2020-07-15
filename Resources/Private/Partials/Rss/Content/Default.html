@@ -3,6 +3,35 @@
 <html xmlns="http://purl.org/rss/1.0/modules/content" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 
 	<f:section name="Default">
+		<f:if condition="{settings.cropTextBody}">
+			<f:then>
+				<f:render section="Crop" arguments="{_all}" />
+			</f:then>
+			<f:else>
+				<f:render section="FullText" />
+			</f:else>
+		</f:if>
+	</f:section>
+
+
+
+	<f:section name="Crop">
+		<f:format.crop maxCharacters="{settings.cropTextBody}" respectWordBoundaries="true" respectHtml="true">
+			<f:render section="FullText" arguments="{_all}" />
+		</f:format.crop>
+		<p>&nbsp;</p>
+		<hr>
+		<p>
+			<a href="{f:uri.page(absolute: 'true', pageUid:'{page.uid}')}" target="_blank">
+				<f:translate key="LLL:EXT:rkw_rss/Resources/Private/Language/locallang.xlf:partials.rss.content.default.labelReadMore" />
+			</a>
+		</p>
+	</f:section>
+
+
+
+	<f:section name="FullText">
+
 		<f:for each="{page.contents}" as="content" iteration="iterator">
 			<f:if condition="{content.header}">
 				<h2>{content.header}</h2>
@@ -10,5 +39,4 @@
 			<f:format.html>{content.bodytext}</f:format.html>
 		</f:for>
 	</f:section>
-
 </html>
