@@ -97,10 +97,6 @@ plugin.tx_rkwrss {
 
         global {
 
-            # @deprecated
-	        # cat=plugin.tx_rkwrss; type=integer; label=PageUid for RSS-Feed
- 			pageUid= {$plugin.tx_rkwrss.settings.global.pageUid}
-
  			# cat=plugin.tx_rkwrss; type=integer; label=RootPid for RSS-Feed
             rootPid= {$plugin.tx_rkwrss.settings.global.rootPid}
 
@@ -109,10 +105,6 @@ plugin.tx_rkwrss {
 
 			# cat=plugin.tx_rkwrss; type=string; label=Field that is used for sorting
 			orderField = {$plugin.tx_rkwrss.settings.global.orderField}
-
-            # @deprecated
-			# cat=plugin.tx_rkwrss; type=string; label=List of colPos that is used to fetch contents from (for e.g. Facebook Instant Articles)
-			contentColPos = {$plugin.tx_rkwrss.settings.global.contentColPos}
 
             # cat=plugin.tx_rkwrss; type=string; label=Column-name and value that is used to fetch contents from (for e.g. Facebook Instant Articles)
             contentColumn = {$plugin.tx_rkwrss.settings.global.contentColumn}
