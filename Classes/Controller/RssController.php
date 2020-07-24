@@ -68,25 +68,68 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * Get all RSS entries
      *
-     * @return void
+     * @return string
      */
     public function rssAction()
     {
 
-        $this->view->assignMultiple($this->getContents('rss'));
+        if (!$feed = $this->getCache()->getContent($this->getCacheKey('rss'))) {
+
+            $this->view->assignMultiple($this->getViewVariables('rss'));
+            $feed = $this->view->render();
+
+            // flush caches
+            $this->getCache()->getCacheManager()->flushCachesByTag('rkwrss_contents');
+
+            // save results in cache
+            $this->getCache()->setContent(
+                $feed,
+                array(
+                    'rkwrss_contents',
+                ),
+                $this->getCacheKey('rss')
+            );
+
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully rebuilt RSS feed.'));
+        } else {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully loaded RSS feed from cache.'));
+        }
+
+        return $feed;
 
     }
 
     /**
      * Get all RSS entries for InstantArticles
      *
-     * @return void
+     * @return string
      */
     public function instantArticlesAction()
     {
+        
+        if (!$feed = $this->getCache()->getContent($this->getCacheKey('instantArticles'))) {
 
-        $this->view->assignMultiple($this->getContents('instantArticles'));
+            $this->view->assignMultiple($this->getViewVariables('instantArticles'));
+            $feed = $this->view->render();
 
+            // flush caches
+            $this->getCache()->getCacheManager()->flushCachesByTag('rkwrss_contents');
+
+            // save results in cache
+            $this->getCache()->setContent(
+                $feed,
+                array(
+                    'rkwrss_contents',
+                ),
+                $this->getCacheKey('instantArticles')
+            );
+
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully rebuilt RSS feed.'));
+        } else {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully loaded RSS feed from cache.'));
+        }
+
+        return $feed;
     }
 
 
@@ -96,7 +139,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param string $type defines with typo of site is to be generated
      * @return array
      */
-    protected function getContents($type = 'rss')
+    protected function getViewVariables($type = 'rss')
     {
 
         if (!in_array($type, array('rss', 'instantArticles'))) {
@@ -109,26 +152,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $this->settings[$type]
         );
 
-        $maxResults = intval(
-            $mergedSettings['limit'] ? $mergedSettings['limit'] : 10
-        );
-
-        $orderField = preg_replace(
-            '#[^a-zA-Z0-9_-]+#',
-            '',
-            $mergedSettings['orderField'] ? $mergedSettings['orderField'] : 'lastUpdated'
-        );
-
-        $contentColumn = preg_replace(
-            '#[^a-zA-Z0-9_-]+#',
-            '',
-            $mergedSettings['contentColumn'] ? $mergedSettings['contentColumn'] : ($mergedSettings['contentColPos'] ? $mergedSettings['contentColPos'] : 0)
-        );
-
-        $rootPid = intval(
-            $mergedSettings['rootPid'] ? $mergedSettings['rootPid'] : ($mergedSettings['pageUid'] ? $mergedSettings['pageUid'] : 1)
-        );
-
+        $config = $this->getConfig($type);
 
         // define basic values now
         $feed = [
@@ -141,85 +165,111 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             'settings'      => $mergedSettings,
         ];
 
-        if (!$feedCache = $this->getCache()->getContent($type . '_' . $rootPid . '_' . $orderField)) {
+
+        //=============================
+        // 1. get pages
+        $pages = null;
+        $languageUid = $GLOBALS['TSFE']->sys_language_uid;
+        try {
+            if ($languageUid > 0) {
+                $pages = $this->pagesLanguageOverlayRepository->findLatest($config['rootPid'], $languageUid, $config['orderField'], $config['maxResults']);
+            } else {
+                $pages = $this->pagesRepository->findLatest($config['rootPid'], $config['orderField'], $config['maxResults']);
+            }
+
+        } catch (\Exception $e) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant pages for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
+        }
+
+
+        if ($pages) {
 
             //=============================
-            // 1. get pages
-            $pages = null;
-            $languageUid = $GLOBALS['TSFE']->sys_language_uid;
+            // 2. get contents of pages
             try {
-                if ($languageUid > 0) {
-                    $pages = $this->pagesLanguageOverlayRepository->findLatest($rootPid, $languageUid, $orderField, $maxResults);
-                } else {
-                    $pages = $this->pagesRepository->findLatest($rootPid, $orderField, $maxResults);
+
+               /** @var \RKW\RkwRss\Domain\Model\Pages $page */
+                foreach ($pages as $page) {
+
+                    if ($languageUid > 0) {
+                        /** @var \RKW\RkwRss\Domain\Model\PagesLanguageOverlay $page */
+                        $page->setContents($this->ttContentRepository->findAllByColumn($page->getPid(), $config['contentColumn'], $languageUid));
+
+                    } else {
+                        $page->setContents($this->ttContentRepository->findAllByColumn($page->getUid(), $config['contentColumn']));
+                    }
+
+                    $feed['pages'][] = $page;
                 }
 
             } catch (\Exception $e) {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant pages for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant contents for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
             }
-
-
-            if ($pages) {
-
-                //=============================
-                // 2. get contents of pages
-                try {
-
-                   /** @var \RKW\RkwRss\Domain\Model\Pages $page */
-                    foreach ($pages as $page) {
-
-                        if ($languageUid > 0) {
-                            /** @var \RKW\RkwRss\Domain\Model\PagesLanguageOverlay $page */
-                            $page->setContents($this->ttContentRepository->findAllByColumn($page->getPid(), $contentColumn, $languageUid));
-
-                        } else {
-                            $page->setContents($this->ttContentRepository->findAllByColumn($page->getUid(), $contentColumn));
-                        }
-                    }
-
-                } catch (\Exception $e) {
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant contents for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
-                }
-
-
-                //=============================
-                // 3. cache results
-                $feedCache = [
-                    'publicationTime' => $pages->getFirst()->getPublicationTime(),
-                    'buildTime' => time(),
-                    'pages' => $pages,
-                ];
-
-                // flush caches
-                $this->getCache()->getCacheManager()->flushCachesByTag('rkwrss_contents');
-
-                // save results in cache
-                $this->getCache()->setContent(
-                    $feedCache,
-                    array(
-                        'rkwrss_contents',
-                    ),
-                    $type . '_' . $rootPid . '_' . $orderField
-                );
-            }
-
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully rebuilt RSS feed.'));
-
-        } else {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully loaded RSS feed from cache.'));
-        }
-
-        // override data from cache array
-        if ($feedCache) {
-            $feed['buildTime'] = $feedCache['buildTime'];
-            $feed['publicationTime'] = $feedCache['publicationTime'];
-            $feed['pages'] = $feedCache['pages'];
         }
 
         return $feed;
     }
 
 
+
+    /**
+     * Get all configuration
+     *
+     * @param string $type defines with typo of site is to be generated
+     * @return array
+     */
+    protected function getConfig($type = 'rss')
+    {
+
+        if (!in_array($type, array('rss', 'instantArticles'))) {
+            $type = 'rss';
+        }
+
+        // override global settings with type-specific settings
+        $mergedSettings = array_merge(
+            $this->settings['global'],
+            $this->settings[$type]
+        );
+        
+        return [
+            'mergedSettings' => $mergedSettings,
+            'maxResults' => intval($mergedSettings['limit'] ? $mergedSettings['limit'] : 10),
+            'orderField' => preg_replace(
+                '#[^a-zA-Z0-9_-]+#',
+                '',
+                $mergedSettings['orderField'] ? $mergedSettings['orderField'] : 'lastUpdated'
+            ),
+            'contentColumn' => preg_replace(
+                '#[^a-zA-Z0-9_-]+#',
+                '',
+                $mergedSettings['contentColumn'] ? $mergedSettings['contentColumn'] : 0
+            ),
+            'rootPid' => intval(
+                $mergedSettings['rootPid'] ? $mergedSettings['rootPid'] : 1
+            )
+        ];
+    }
+
+
+    /**
+     * Returns cache key
+     *
+     * @param string $type defines with typo of site is to be generated
+     * @return string
+     */
+    protected function getCacheKey($type = 'rss')
+    {
+        
+        if (!in_array($type, array('rss', 'instantArticles'))) {
+            $type = 'rss';
+        }
+
+        $config = $this->getConfig($type);
+        return $type . '_' . $config['rootPid'] . '_' . intval($GLOBALS['TSFE']->sys_language_uid) . '_' . $config['contentColumn'] . '_' . $config['orderField'];
+    }
+    
+    
+    
     /**
      * Returns logger instance
      *
