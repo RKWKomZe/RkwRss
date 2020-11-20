@@ -58,6 +58,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     protected $ttContentRepository;
 
+
     /**
      * @var \TYPO3\CMS\Core\Log\Logger
      */

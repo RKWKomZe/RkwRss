@@ -23,8 +23,17 @@ namespace RKW\RkwRss\Cache;
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RssCache extends CacheAbstract
+class RssCache extends \RKW\RkwBasics\Cache\CacheAbstract
 {
+    /**
+     * @var string Key for cache
+     */
+    protected $_key = 'rkwrss';
+
+    /**
+     * @var string Identifier for cache
+     */
+    protected $_identifier = 'rkwrss';
 
 
 }
