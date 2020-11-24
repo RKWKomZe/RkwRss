@@ -28,12 +28,12 @@ class RssCache extends \RKW\RkwBasics\Cache\CacheAbstract
     /**
      * @var string Key for cache
      */
-    protected $_key = 'rkwrss';
+    protected $_key = 'rkw_rss';
 
     /**
      * @var string Identifier for cache
      */
-    protected $_identifier = 'rkwrss';
+    protected $_identifier = 'rkw_rss';
 
 
 }
