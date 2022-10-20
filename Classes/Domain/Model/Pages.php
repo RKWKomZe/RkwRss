@@ -81,8 +81,8 @@ class Pages extends \RKW\RkwBasics\Domain\Model\Pages implements PagesInterface
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    protected function getSettings($which = \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
+    protected function getSettings(string $which = \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
     {
-        return \RKW\RkwBasics\Helper\Common::getTyposcriptConfiguration('RkwRss', $which);
+        return \RKW\RkwBasics\Utility\GeneralUtility::getTyposcriptConfiguration('RkwRss', $which);
     }
 }

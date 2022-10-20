@@ -15,6 +15,12 @@ namespace RKW\RkwRss\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwRss\Cache\RssCache;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Log\Logger;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class RssController
  *
@@ -29,7 +35,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
     /**
      * @var \RKW\RkwRss\Cache\RssCache
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $cache;
 
@@ -37,7 +43,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * pagesRepository
      *
      * @var \RKW\RkwRss\Domain\Repository\PagesRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $pagesRepository;
 
@@ -45,7 +51,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * pagesLanguageOverlayRepository
      *
      * @var \RKW\RkwRss\Domain\Repository\PagesLanguageOverlayRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $pagesLanguageOverlayRepository;
 
@@ -54,7 +60,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * ttContentRepository
      *
      * @var \RKW\RkwRss\Domain\Repository\TtContentRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $ttContentRepository;
 
@@ -107,7 +113,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function instantArticlesAction()
     {
-        
+
         if (!$feed = $this->getCache()->getContent($this->getCacheKey('instantArticles'))) {
 
             $this->view->assignMultiple($this->getViewVariables('instantArticles'));
@@ -170,7 +176,10 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         //=============================
         // 1. get pages
         $pages = null;
-        $languageUid = $GLOBALS['TSFE']->sys_language_uid;
+
+        /** @var \TYPO3\CMS\Core\Context\LanguageAspect $languageAspect */
+        $languageAspect = GeneralUtility::makeInstance(Context::class)->getAspect('language');
+        $languageUid = $languageAspect->getId();
         try {
             if ($languageUid > 0) {
                 $pages = $this->pagesLanguageOverlayRepository->findLatest($config['rootPid'], $languageUid, $config['orderField'], $config['maxResults']);
@@ -231,7 +240,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $this->settings['global'],
             $this->settings[$type]
         );
-        
+
         return [
             'mergedSettings' => $mergedSettings,
             'maxResults' => intval($mergedSettings['limit'] ? $mergedSettings['limit'] : 10),
@@ -258,29 +267,34 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param string $type defines with typo of site is to be generated
      * @return string
      */
-    protected function getCacheKey($type = 'rss')
+    protected function getCacheKey(string $type = 'rss'): string
     {
-        
+
         if (!in_array($type, array('rss', 'instantArticles'))) {
             $type = 'rss';
         }
 
         $config = $this->getConfig($type);
-        return $type . '_' . $config['rootPid'] . '_' . intval($GLOBALS['TSFE']->sys_language_uid) . '_' . $config['contentColumn'] . '_' . $config['orderField'];
+
+        /** @var \TYPO3\CMS\Core\Context\LanguageAspect $languageAspect */
+        $languageAspect = GeneralUtility::makeInstance(Context::class)->getAspect('language');
+        $languageUid = $languageAspect->getId();
+
+        return $type . '_' . $config['rootPid'] . '_' . $languageUid . '_' . $config['contentColumn'] . '_' . $config['orderField'];
     }
-    
-    
-    
+
+
+
     /**
      * Returns logger instance
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Core\Log\LogManager')->getLogger(__CLASS__);
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;
@@ -292,11 +306,11 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      *
      * @return \RKW\RkwRss\Cache\RssCache
      */
-    protected function getCache()
+    protected function getCache(): RssCache
     {
 
         if (!$this->cache instanceof \RKW\RkwRss\Cache\RssCache) {
-            $this->cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwRss\\Cache\\RssCache');
+            $this->cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(RssCache::class);
         }
 
         return $this->cache;
