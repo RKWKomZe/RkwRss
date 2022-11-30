@@ -6,7 +6,7 @@ namespace RKW\RkwRss\Domain\Model;
  * TtContent
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_Rss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
