@@ -84,7 +84,7 @@ class PagesLanguageOverlay extends \RKW\RkwBasics\Domain\Model\PagesLanguageOver
      */
     protected function getSettings($which = \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
     {
-        return \RKW\RkwBasics\Utility\GeneralUtility::getTyposcriptConfiguration('RkwRss', $which);
+        return \Madj2k\CoreExtended\Utility\GeneralUtility::getTypoScriptConfiguration('RkwRss', $which);
     }
 }
 

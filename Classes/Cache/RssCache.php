@@ -23,7 +23,7 @@ namespace RKW\RkwRss\Cache;
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RssCache extends \RKW\RkwBasics\Cache\CacheAbstract
+class RssCache extends \Madj2k\CoreExtended\Cache\CacheAbstract
 {
     /**
      * @var string Key for cache

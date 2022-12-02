@@ -15,7 +15,6 @@ namespace RKW\RkwRss\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwAjax\Utilities\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
@@ -54,7 +53,7 @@ class DateFormatInstantArticlesViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHel
      *
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
-     * @param TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
     public static function renderStatic(
