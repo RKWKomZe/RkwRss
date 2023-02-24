@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwRss\ViewHelpers;
 
 /*
@@ -15,29 +14,62 @@ namespace RKW\RkwRss\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
+
 /**
  * Class DateFormatInstantArticlesViewHelper
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class DateFormatInstantArticlesViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+class DateFormatInstantArticlesViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
+
+    use CompileWithContentArgumentAndRenderStatic;
+
+    /**
+     * @var bool
+     */
+    protected $escapeOutput = false;
 
 
     /**
-     * Format timestamps to "D, d M Y H:i:s T"
+     * Initialize arguments.
      *
-     * @param integer $dateTime
-     * @return string
+     * @return void
+     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function render($dateTime)
+    public function initializeArguments(): void
     {
-
-        return date("D, d M Y H:i:s O", $dateTime);
-        //===
+        parent::initializeArguments();
+        $this->registerArgument('value', 'string', 'Date/Time-String to format', false);
+        $this->registerArgument('format', 'string', 'The format to format the Date/Time-string with.', false);
     }
 
+
+    /**
+     * Handles line breaks and indents in plaintext mode
+     *
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+     * @return string
+     */
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
+
+        $value = $renderChildrenClosure();
+        $format = $arguments['format'] ?: "D, d M Y H:i:s O";
+
+        if ($value && $format) {
+            return date($format, $value);
+        }
+        return $value;
+    }
 }

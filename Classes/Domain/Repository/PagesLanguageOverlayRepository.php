@@ -15,11 +15,15 @@ namespace RKW\RkwRss\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\QueryGenerator;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+
 /**
  * Class PagesLanguageOverlayRepository
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -31,11 +35,11 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
      *
      * @return void
      */
-    public function initializeObject()
+    public function initializeObject(): void
     {
 
         /** @var $querySettings \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings */
-        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
 
         // don't add the pid constraint
         $querySettings->setRespectStoragePage(false);
@@ -49,14 +53,18 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
      * Find the latest pages
      *
      * @param int $rootPid
-     * @param integer $languageUid LanguageUid for query
+     * @param int $languageUid LanguageUid for query
      * @param string $field Field to order by
-     * @param integer $limit Number of items to fetch
+     * @param int $limit Number of items to fetch
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function findLatest($rootPid, $languageUid, $field = 'crdate', $limit = 100)
-    {
+    public function findLatest(
+        int $rootPid,
+        int $languageUid,
+        string $field = 'crdate',
+        int $limit = 100
+    ): QueryResultInterface {
 
         $query = $this->createQuery();
         $query->setOrderings(
@@ -82,13 +90,11 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
      * @param int $depth
      * @return array
      */
-    protected function getPidList($rootPid = 0, $depth = 999999)
+    protected function getPidList(int $rootPid = 0, int $depth = 999999): array
     {
 
         /** @var \TYPO3\CMS\Core\Database\QueryGenerator $queryGenerator */
-        $queryGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\QueryGenerator');
-        $childPids = explode(',', $queryGenerator->getTreeList($rootPid, $depth, 0, 1));
-
-        return $childPids;
+        $queryGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(QueryGenerator::class);
+        return explode(',', $queryGenerator->getTreeList($rootPid, $depth, 0, 1));
     }
 }

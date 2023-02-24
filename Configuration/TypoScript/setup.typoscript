@@ -4,15 +4,9 @@ config.tx_extbase{
 		classes {
 
 
-            RKW\RkwBasics\Domain\Model\Pages {
+            Madj2k\CoreExtended\Domain\Model\Pages {
                 subclasses {
                     Tx_RkwRss_Pages = RKW\RkwRss\Domain\Model\Pages
-                }
-            }
-
-            RKW\RkwBasics\Domain\Model\PagesLanguageOverlay {
-                subclasses {
-                    Tx_RkwRss_PagesLanguageOverlay = RKW\RkwRss\Domain\Model\PagesLanguageOverlay
                 }
             }
 
@@ -29,6 +23,7 @@ config.tx_extbase{
                     columns {
                         uid.mapOnProperty = uid
                         pid.mapOnProperty = pid
+                        sys_language_uid.mapOnProperty = sysLanguageUid
                         sorting.mapOnProperty = sorting
                         crdate.mapOnProperty = crdate
                         tstamp.mapOnProperty = tstamp
@@ -40,6 +35,13 @@ config.tx_extbase{
                         lastUpdated.mapOnProperty = lastUpdated
                         abstract.mapOnProperty = abstract
                     }
+                }
+            }
+
+            // ==================================================================
+            Madj2k\CoreExtended\Domain\Model\PagesLanguageOverlay {
+                subclasses {
+                    Tx_RkwRss_PagesLanguageOverlay = RKW\RkwRss\Domain\Model\PagesLanguageOverlay
                 }
             }
 
@@ -59,6 +61,7 @@ config.tx_extbase{
                     columns {
                         uid.mapOnProperty = uid
                         pid.mapOnProperty = pid
+                        sys_language_uid.mapOnProperty = sysLanguageUid
                         sorting.mapOnProperty = sorting
                         crdate.mapOnProperty = crdate
                         tstamp.mapOnProperty = tstamp
@@ -69,7 +72,6 @@ config.tx_extbase{
                         no_search.mapOnProperty = noSearch
                         lastUpdated.mapOnProperty = lastUpdated
                         abstract.mapOnProperty = abstract
-                        sys_language_uid.mapOnProperty = sysLanguageUid
                     }
                 }
             }
@@ -92,7 +94,7 @@ plugin.tx_rkwrss {
 	persistence {
 		storagePid = {$plugin.tx_rkwrss.persistence.storagePid}
 	}
-	
+
 	settings {
 
         global {
@@ -155,7 +157,7 @@ plugin.tx_rkwrss {
 
 			# cat=plugin.tx_rkwrss; type=string; label=Tracking Account Id
 			trackingAccountId = {$plugin.tx_rkwrss.settings.instantArticles.trackingAccountId}
-			
+
 		}
 	}
 }

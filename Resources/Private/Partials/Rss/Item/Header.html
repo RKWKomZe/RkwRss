@@ -9,7 +9,7 @@
 
 	<f:comment>The URL of the item.</f:comment>
 	<link>
-		<f:uri.page absolute="TRUE" pageUid="{page.uid}" />
+		<f:uri.page absolute="true" pageUid="{page.uid}" />
 	</link>
 
 	<f:comment>Indicates when the item was published.</f:comment>
@@ -27,9 +27,9 @@
 	<f:comment>The item synopsis.</f:comment>
 	<description>
 		<f:format.cdata>
-			<f:if condition="{page.txRkwbasicsTeaserImage}" >
+			<f:if condition="{page.txCoreextendedPreviewImage}" >
 				<f:then>
-					<f:image image="{page.txRkwbasicsTeaserImage}" absolute="1" treatIdAsReference="1" width="200"/>
+					<f:image image="{page.txCoreextendedPreviewImage}" absolute="1" treatIdAsReference="1" width="200"/>
 				</f:then>
 			</f:if>
 			<f:if condition="{page.abstract}" >
