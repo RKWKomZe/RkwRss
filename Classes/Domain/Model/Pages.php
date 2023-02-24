@@ -14,6 +14,10 @@ namespace RKW\RkwRss\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Madj2k\CoreExtended\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+
 /**
  * Class Pages
  *
@@ -22,23 +26,21 @@ namespace RKW\RkwRss\Domain\Model;
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Pages extends \RKW\RkwBasics\Domain\Model\Pages implements PagesInterface
+class Pages extends \Madj2k\CoreExtended\Domain\Model\Pages implements PagesInterface
 {
 
     /**
-     * Contents
-     *
-     * @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|null
      */
-    protected $contents = [];
+    protected ?QueryResultInterface $contents = null;
 
 
     /**
      * Gets the contents
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $contents
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|null $contents
      */
-    public function getContents()
+    public function getContents():? QueryResultInterface
     {
         return $this->contents;
     }
@@ -50,7 +52,7 @@ class Pages extends \RKW\RkwBasics\Domain\Model\Pages implements PagesInterface
      * @param \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $contents
      * @return void
      */
-    public function setContents($contents)
+    public function setContents(QueryResultInterface $contents)
     {
         $this->contents = $contents;
     }
@@ -59,13 +61,13 @@ class Pages extends \RKW\RkwBasics\Domain\Model\Pages implements PagesInterface
     /**
      * Returns the publicationTime
      *
-     * @return integer
+     * @return int
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    public function getPublicationTime()
+    public function getPublicationTime(): int
     {
         $settings = $this->getSettings();
-        $getter = 'get' . \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($settings['global']['orderField']);
+        $getter = 'get' . GeneralUtility::underscoredToUpperCamelCase($settings['global']['orderField']);
         if (method_exists($this, $getter)) {
             return $this->$getter();
         }
@@ -81,8 +83,8 @@ class Pages extends \RKW\RkwBasics\Domain\Model\Pages implements PagesInterface
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    protected function getSettings(string $which = \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
+    protected function getSettings(string $which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS): array
     {
-        return \Madj2k\CoreExtended\Utility\GeneralUtility::getTypoScriptConfiguration('RkwRss', $which);
+        return GeneralUtility::getTypoScriptConfiguration('RkwRss', $which);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwRss\Cache;
 
 /*
@@ -23,17 +22,9 @@ namespace RKW\RkwRss\Cache;
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RssCache extends \Madj2k\CoreExtended\Cache\CacheAbstract
+class RssCache extends \Madj2k\Accelerator\Cache\CacheAbstract
 {
-    /**
-     * @var string Key for cache
-     */
-    protected $_key = 'rkw_rss';
 
-    /**
-     * @var string Identifier for cache
-     */
-    protected $_identifier = 'rkw_rss';
 
 
 }

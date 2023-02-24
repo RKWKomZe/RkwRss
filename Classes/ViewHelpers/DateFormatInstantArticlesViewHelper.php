@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwRss\ViewHelpers;
 
 /*
@@ -36,17 +35,20 @@ class DateFormatInstantArticlesViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHel
      */
     protected $escapeOutput = false;
 
+
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('value', 'string', 'Date/Time-String to format', false);
         $this->registerArgument('format', 'string', 'The format to format the Date/Time-string with.', false);
     }
+
 
     /**
      * Handles line breaks and indents in plaintext mode

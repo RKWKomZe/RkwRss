@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwRss\Controller;
 
 /*
@@ -15,7 +14,13 @@ namespace RKW\RkwRss\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Madj2k\Accelerator\Cache\CacheAbstract;
+use Madj2k\Accelerator\Cache\DefaultCache;
+use Madj2k\CoreExtended\Cache\SitemapCache;
 use RKW\RkwRss\Cache\RssCache;
+use RKW\RkwRss\Domain\Repository\PagesLanguageOverlayRepository;
+use RKW\RkwRss\Domain\Repository\PagesRepository;
+use RKW\RkwRss\Domain\Repository\TtContentRepository;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -32,74 +37,66 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
 
-
     /**
-     * @var \RKW\RkwRss\Cache\RssCache
+     * @var \Madj2k\Accelerator\Cache\DefaultCache
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $cache;
+    protected DefaultCache $cache;
+
 
     /**
-     * pagesRepository
-     *
      * @var \RKW\RkwRss\Domain\Repository\PagesRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $pagesRepository;
+    protected PagesRepository $pagesRepository;
+
 
     /**
-     * pagesLanguageOverlayRepository
-     *
      * @var \RKW\RkwRss\Domain\Repository\PagesLanguageOverlayRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $pagesLanguageOverlayRepository;
+    protected PagesLanguageOverlayRepository $pagesLanguageOverlayRepository;
 
 
     /**
-     * ttContentRepository
-     *
      * @var \RKW\RkwRss\Domain\Repository\TtContentRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $ttContentRepository;
+    protected TtContentRepository $ttContentRepository;
 
 
     /**
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
-
+    protected ?Logger $logger = null;
 
 
     /**
      * Get all RSS entries
      *
      * @return string
+     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      */
-    public function rssAction()
+    public function rssAction(): string
     {
 
-        if (!$feed = $this->getCache()->getContent($this->getCacheKey('rss'))) {
+        $cache = $this->getCache()->setEntryIdentifier($this->getEntryIdentifier('rss'));
+        if (!$feed = $cache->getContent()) {
 
             $this->view->assignMultiple($this->getViewVariables('rss'));
             $feed = $this->view->render();
 
             // flush caches
-            $this->getCache()->getCacheManager()->flushCachesByTag('rkwrss_contents');
+            $cache->flushByTag(CacheAbstract::TAG_IDENTIFIER);
 
             // save results in cache
-            $this->getCache()->setContent(
-                $feed,
-                array(
-                    'rkwrss_contents',
-                ),
-                $this->getCacheKey('rss')
-            );
+            $cache->setContent($feed);
 
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully rebuilt RSS feed.'));
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Successfully rebuilt RSS feed.');
+
         } else {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully loaded RSS feed from cache.'));
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Successfully loaded RSS feed from cache.');
         }
 
         return $feed;
@@ -110,30 +107,27 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * Get all RSS entries for InstantArticles
      *
      * @return string
+     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      */
-    public function instantArticlesAction()
+    public function instantArticlesAction(): string
     {
 
-        if (!$feed = $this->getCache()->getContent($this->getCacheKey('instantArticles'))) {
+        $cache = $this->getCache()->setEntryIdentifier($this->getEntryIdentifier('instantArticles'));
+        if (!$feed = $cache->getContent()) {
 
             $this->view->assignMultiple($this->getViewVariables('instantArticles'));
             $feed = $this->view->render();
 
             // flush caches
-            $this->getCache()->getCacheManager()->flushCachesByTag('rkwrss_contents');
+            $cache->flushByTag(CacheAbstract::TAG_IDENTIFIER);
 
             // save results in cache
-            $this->getCache()->setContent(
-                $feed,
-                array(
-                    'rkwrss_contents',
-                ),
-                $this->getCacheKey('instantArticles')
-            );
+            $cache->setContent($feed);
 
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully rebuilt RSS feed.'));
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Successfully rebuilt RSS feed.');
         } else {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully loaded RSS feed from cache.'));
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Successfully loaded RSS feed from cache.');
         }
 
         return $feed;
@@ -145,8 +139,9 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      *
      * @param string $type defines with typo of site is to be generated
      * @return array
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      */
-    protected function getViewVariables($type = 'rss')
+    protected function getViewVariables(string $type = 'rss'): array
     {
 
         if (!in_array($type, array('rss', 'instantArticles'))) {
@@ -182,13 +177,28 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $languageUid = $languageAspect->getId();
         try {
             if ($languageUid > 0) {
-                $pages = $this->pagesLanguageOverlayRepository->findLatest($config['rootPid'], $languageUid, $config['orderField'], $config['maxResults']);
+                $pages = $this->pagesLanguageOverlayRepository->findLatest(
+                    $config['rootPid'],
+                    $languageUid,
+                    $config['orderField'],
+                    $config['maxResults']
+                );
             } else {
-                $pages = $this->pagesRepository->findLatest($config['rootPid'], $config['orderField'], $config['maxResults']);
+                $pages = $this->pagesRepository->findLatest(
+                    $config['rootPid'],
+                    $config['orderField'],
+                    $config['maxResults']
+                );
             }
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant pages for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
+            $this->getLogger()->log(
+                \TYPO3\CMS\Core\Log\LogLevel::ERROR,
+                sprintf(
+                    'An error occurred while trying to fetch relevant pages for RSS feed. Message: %s',
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
         }
 
 
@@ -203,23 +213,39 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
                     if ($languageUid > 0) {
                         /** @var \RKW\RkwRss\Domain\Model\PagesLanguageOverlay $page */
-                        $page->setContents($this->ttContentRepository->findAllByColumn($page->getPid(), $config['contentColumn'], $languageUid));
+                        $page->setContents(
+                            $this->ttContentRepository->findAllByColumn(
+                                $page->getPid(),
+                                $config['contentColumn'],
+                                $languageUid
+                            )
+                        );
 
                     } else {
-                        $page->setContents($this->ttContentRepository->findAllByColumn($page->getUid(), $config['contentColumn']));
+                        $page->setContents(
+                            $this->ttContentRepository->findAllByColumn(
+                                $page->getUid(),
+                                $config['contentColumn']
+                            )
+                        );
                     }
 
                     $feed['pages'][] = $page;
                 }
 
             } catch (\Exception $e) {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An error occurred while trying to fetch relevant contents for RSS feed. Message: %s', str_replace(array("\n", "\r"), '', $e->getMessage())));
+                $this->getLogger()->log(
+                    \TYPO3\CMS\Core\Log\LogLevel::ERROR,
+                    sprintf(
+                        'An error occurred while trying to fetch relevant contents for RSS feed. Message: %s',
+                        str_replace(array("\n", "\r"), '', $e->getMessage())
+                    )
+                );
             }
         }
 
         return $feed;
     }
-
 
 
     /**
@@ -243,19 +269,19 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
         return [
             'mergedSettings' => $mergedSettings,
-            'maxResults' => intval($mergedSettings['limit'] ? $mergedSettings['limit'] : 10),
+            'maxResults' => intval($mergedSettings['limit'] ?: 10),
             'orderField' => preg_replace(
                 '#[^a-zA-Z0-9_-]+#',
                 '',
-                $mergedSettings['orderField'] ? $mergedSettings['orderField'] : 'lastUpdated'
+                $mergedSettings['orderField'] ?: 'lastUpdated'
             ),
             'contentColumn' => preg_replace(
                 '#[^a-zA-Z0-9_-]+#',
                 '',
-                $mergedSettings['contentColumn'] ? $mergedSettings['contentColumn'] : 0
+                $mergedSettings['contentColumn'] ?: 0
             ),
             'rootPid' => intval(
-                $mergedSettings['rootPid'] ? $mergedSettings['rootPid'] : 1
+                $mergedSettings['rootPid'] ?: 1
             )
         ];
     }
@@ -266,8 +292,9 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      *
      * @param string $type defines with typo of site is to be generated
      * @return string
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      */
-    protected function getCacheKey(string $type = 'rss'): string
+    protected function getEntryIdentifier(string $type = 'rss'): string
     {
 
         if (!in_array($type, array('rss', 'instantArticles'))) {
@@ -280,9 +307,9 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $languageAspect = GeneralUtility::makeInstance(Context::class)->getAspect('language');
         $languageUid = $languageAspect->getId();
 
-        return $type . '_' . $config['rootPid'] . '_' . $languageUid . '_' . $config['contentColumn'] . '_' . $config['orderField'];
+        return $type . '_' . $config['rootPid'] . '_' . $languageUid . '_'
+            . $config['contentColumn'] . '_' . $config['orderField'];
     }
-
 
 
     /**
@@ -294,7 +321,7 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;
@@ -309,11 +336,10 @@ class RssController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     protected function getCache(): RssCache
     {
 
-        if (!$this->cache instanceof \RKW\RkwRss\Cache\RssCache) {
-            $this->cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(RssCache::class);
-        }
-
-        return $this->cache;
+        $cache = GeneralUtility::makeInstance(RssCache::class);
+        $cache->setIdentifier($this->extensionName);
+        $cache->setRequest($this->request);
+        return $cache;
     }
 
 }
