@@ -6,211 +6,169 @@ namespace RKW\RkwRss\Domain\Model;
  * TtContent
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_Rss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class TtContent extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
-    /**
-     * uid
-     *
-     * @var integer
-     */
-    protected $uid;
 
     /**
-     * pid
-     *
-     * @var integer
+     * @var int
      */
-    protected $pid;
+    protected int $ctype = 0;
+
 
     /**
-     * ctype
-     *
-     * @var integer
+     * @var int
      */
-    protected $ctype;
+    protected int $colpos = 0;
+
 
     /**
-     * colpos
-     *
-     * @var integer
+     * @var int
      */
-    protected $colpos;
+    protected int $crdate = 0;
+
 
     /**
-     * crdate
-     *
-     * @var integer
+     * @var int
      */
-    protected $crdate;
+    protected int $sysLanguageUid = 0;
+
 
     /**
-     * sysLanguageUid
-     *
-     * @var integer
-     */
-    protected $sysLanguageUid;
-
-    /**
-     * header
-     *
      * @var string
      */
-    protected $header;
+    protected string $header = '';
+
 
     /**
-     * bodytext
-     *
      * @var string
      */
-    protected $bodytext;
+    protected string $bodytext = '';
+
 
     /**
-     * headerLink
-     *
      * @var string
      */
-    protected $headerLink;
+    protected string $headerLink = '';
 
-
-    /**
-     * Returns the uid
-     *
-     * @return integer $uid
-     */
-    public function getUid()
-    {
-        return $this->uid;
-    }
 
     /**
      * Sets the uid
      *
-     * @param integer $uid
+     * @param int $uid
      * @return void
      */
-    public function setUid($uid)
+    public function setUid(int $uid): void
     {
         $this->uid = $uid;
     }
 
-    /**
-     * Returns the pid
-     *
-     * @return integer $pid
-     */
-    public function getPid()
-    {
-        return $this->pid;
-    }
-
-    /**
-     * Sets the pid
-     *
-     * @param integer $pid
-     * @return void
-     */
-    public function setPid($pid)
-    {
-        $this->pid = $pid;
-    }
 
     /**
      * Returns the ctype
      *
-     * @return integer $ctype
+     * @return int
      */
-    public function getCtype()
+    public function getCtype(): int
     {
         return $this->ctype;
     }
 
+
     /**
      * Sets the ctype
      *
-     * @param integer $ctype
+     * @param int $ctype
      * @return void
      */
-    public function setCtype($ctype)
+    public function setCtype(int $ctype): void
     {
         $this->ctype = $ctype;
     }
 
+
     /**
      * Returns the colpos
      *
-     * @return integer $colpos
+     * @return int $colpos
      */
-    public function getColpos()
+    public function getColpos(): int
     {
         return $this->colpos;
     }
 
+
     /**
      * Sets the colpos
      *
-     * @param integer $colpos
+     * @param int $colpos
      * @return void
      */
-    public function setColpos($colpos)
+    public function setColpos(int $colpos): void
     {
         $this->colpos = $colpos;
     }
 
+
     /**
      * Returns the crdate
      *
-     * @return integer $crdate
+     * @return int
      */
-    public function getCrdate()
+    public function getCrdate(): int
     {
         return $this->crdate;
     }
 
+
     /**
      * Sets the crdate
      *
-     * @param integer $crdate
+     * @param int $crdate
      * @return void
      */
-    public function setCrdate($crdate)
+    public function setCrdate(int $crdate): void
     {
         $this->crdate = $crdate;
     }
 
+
     /**
      * Returns the sysLanguageUid
      *
-     * @return integer $sysLanguageUid
+     * @return int
      */
-    public function getSysLanguageUid()
+    public function getSysLanguageUid(): int
     {
         return $this->sysLanguageUid;
     }
 
+
     /**
      * Sets the sysLanguageUid
      *
-     * @param integer $sysLanguageUid
+     * @param int $sysLanguageUid
      * @return void
      */
-    public function setSysLanguageUid($sysLanguageUid)
+    public function setSysLanguageUid(int $sysLanguageUid): void
     {
         $this->sysLanguageUid = $sysLanguageUid;
     }
 
+
     /**
      * Returns the header
      *
-     * @return string $header
+     * @return string
      */
-    public function getHeader()
+    public function getHeader(): string
     {
         return $this->header;
     }
+
 
     /**
      * Sets the header
@@ -218,20 +176,22 @@ class TtContent extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $header
      * @return void
      */
-    public function setHeader($header)
+    public function setHeader(string $header): void
     {
         $this->header = $header;
     }
 
+
     /**
      * Returns the bodytext
      *
-     * @return string $bodytext
+     * @return string
      */
-    public function getBodytext()
+    public function getBodytext(): string
     {
         return $this->bodytext;
     }
+
 
     /**
      * Sets the bodytext
@@ -239,20 +199,22 @@ class TtContent extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $bodytext
      * @return void
      */
-    public function setBodytext($bodytext)
+    public function setBodytext(string $bodytext)
     {
         $this->bodytext = $bodytext;
     }
 
+
     /**
      * Returns the headerLink
      *
-     * @return string $headerLink
+     * @return string
      */
-    public function getHeaderLink()
+    public function getHeaderLink(): string
     {
         return $this->headerLink;
     }
+
 
     /**
      * Sets the headerLink
@@ -260,7 +222,7 @@ class TtContent extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $headerLink
      * @return void
      */
-    public function setHeaderLink($headerLink)
+    public function setHeaderLink(string $headerLink): void
     {
         $this->headerLink = $headerLink;
     }

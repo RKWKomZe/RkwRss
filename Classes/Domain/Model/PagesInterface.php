@@ -14,24 +14,25 @@ namespace RKW\RkwRss\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+
 /**
  * Interface Pages
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwRss
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 interface PagesInterface
 {
 
-
     /**
      * Gets the contents
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $contents
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|null $contents
      */
-    public function getContents();
+    public function getContents(): ?QueryResultInterface;
 
 
     /**
@@ -40,14 +41,15 @@ interface PagesInterface
      * @param \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $contents
      * @return void
      */
-    public function setContents($contents);
+    public function setContents(QueryResultInterface $contents);
+
 
     /**
      * Returns the publicationTime
      *
-     * @return integer
+     * @return int
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    public function getPublicationTime();
+    public function getPublicationTime(): int;
 
 }
