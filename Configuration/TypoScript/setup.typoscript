@@ -87,9 +87,19 @@ config.tx_extbase{
 #=================================================================================
 plugin.tx_rkwrss {
 	view {
-		templateRootPaths.0 = {$plugin.tx_rkwrss.view.templateRootPath}
-		partialRootPaths.0 = {$plugin.tx_rkwrss.view.partialRootPath}
-		layoutRootPaths.0 = {$plugin.tx_rkwrss.view.layoutRootPath}
+		templateRootPaths {
+		    0 = EXT:rkw_rss/Resources/Private/Templates/
+		    1 = {$plugin.tx_rkwrss.view.templateRootPath}
+		}
+		partialRootPaths {
+		    0 = EXT:rkw_rss/Resources/Private/Partials/
+		    1 = {$plugin.tx_rkwrss.view.partialRootPath}
+		    2 = {$plugin.tx_coreextended.view.partialRootPath}
+		}
+		layoutRootPaths {
+		    0 = EXT:rkw_rss/Resources/Private/Layouts/
+		    1 = {$plugin.tx_rkwrss.view.layoutRootPath}
+		}
 	}
 	persistence {
 		storagePid = {$plugin.tx_rkwrss.persistence.storagePid}
@@ -253,6 +263,6 @@ page {
 	}
 }
 
-[globalVar = GP:no_rss = 1]
+[(request.getQueryParams()['no_rss']) == 1]
     page.headerData.999 >
 [end]
