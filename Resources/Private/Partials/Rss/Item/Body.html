@@ -69,8 +69,8 @@
 								</figure>
 							</f:then>
 						</f:if>
-						<time class="op-published" dateTime="<rkwRss:DateFormatInstantArticles dateTime='{page.crdate}' />"><f:format.date date="{page.publicationTime}" format="d.m.y H:i" /></time>
-						<time class="op-modified" dateTime="<rkwRss:DateFormatInstantArticles dateTime='{page.tstamp}' />"><f:format.date date="{page.tstamp}" format="d.m.y H:i" /></time>
+						<time class="op-published" dateTime="<rkwRss:DateFormatInstantArticles value='{page.crdate}' />"><f:format.date date="{page.publicationTime}" format="d.m.y H:i" /></time>
+						<time class="op-modified" dateTime="<rkwRss:DateFormatInstantArticles value='{page.tstamp}' />"><f:format.date date="{page.tstamp}" format="d.m.y H:i" /></time>
 					</header>
 
 					<f:comment>Content</f:comment>
