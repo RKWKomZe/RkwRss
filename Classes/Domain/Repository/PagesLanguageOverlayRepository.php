@@ -15,7 +15,7 @@ namespace RKW\RkwRss\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Database\QueryGenerator;
+use Madj2k\CoreExtended\Utility\QueryUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
@@ -58,6 +58,7 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
      * @param int $limit Number of items to fetch
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
      */
     public function findLatest(
         int $rootPid,
@@ -87,14 +88,11 @@ class PagesLanguageOverlayRepository extends \TYPO3\CMS\Extbase\Persistence\Repo
      * Get all subpages of given PIDs
      *
      * @param int $rootPid
-     * @param int $depth
      * @return array
+     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
      */
-    protected function getPidList(int $rootPid = 0, int $depth = 999999): array
+    protected function getPidList(int $rootPid = 0): array
     {
-
-        /** @var \TYPO3\CMS\Core\Database\QueryGenerator $queryGenerator */
-        $queryGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(QueryGenerator::class);
-        return explode(',', $queryGenerator->getTreeList($rootPid, $depth, 0, 1));
+        return explode(',', QueryUtility::getTreeList($rootPid));
     }
 }
